@@ -1,0 +1,104 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    margin: 1em;
+  }
+  #mainContainer {
+    flex: 1;
+    margin-right: 1em;
+  }
+  #logContainer {
+    flex: 0 0 45%;
+    max-height: 80vh;
+    border-left: 1px solid #ccc;
+    padding-left: 1em;
+    box-sizing: border-box;
+    min-height: 80vh;
+    overflow-y: auto;
+  }
+  .controls {
+    display: flex;
+    gap: 1em;
+    margin-top: 1em;
+  }
+  h1, h2 {
+    margin-top: 0;
+  }
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  table, th, td {
+    border: 1px solid #333;
+    border-collapse: collapse;
+    padding: 6px;
+  }
+  th {
+    background-color: #f2f2f2;
+    width: 400px;
+  }
+  td[contenteditable="true"] {
+    background-color: #fff8dc; /* highlight for editable cells */
+  }
+  .line-block {
+    border: 1px solid #ccc;
+    padding: 1em;
+    margin-bottom: 2em;
+  }
+  .line-header {
+    font-weight: bold;
+    margin-bottom: 0.5em;
+    white-space: pre;
+  }
+  .phrase-container {
+    margin: 1em 0;
+  }
+  .phrase-container label {
+    display: block;
+    font-weight: bold;
+    margin: 0.5em 0 0.25em;
+  }
+  .phrase-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .save-all-button {
+    display: block;
+    margin-top: 1em;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+/* 1) Make sure whitespace and line‐breaks are preserved */
+#translationLog {
+    white-space: pre-wrap;
+    font-family: Menlo, Consolas, "Courier New", monospace;
+    line-height: 1.5;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    display: block;
+  }
+
+  .translation-block {
+    width: 100%
+  }
+  
+  
+  /* 3) Give the START/END markers a bit of color so they stand out */
+  #translationLog span.marker {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    background: #eee;
+    padding: 0.25rem 0.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  #translationLog .block {
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    background: #fff;
+  }

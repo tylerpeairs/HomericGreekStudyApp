@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Iliad Lines (Single Save)</title>
+  <!-- external stylesheet -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="mainContainer">
+    <h1>Iliad Lines (Single Save)</h1>
+    <p>
+      Enter lines below. A line can contain a line number (e.g. <code>1.395</code>)
+      or just text. If a line is just a line number, the next line is its text.
+      If subsequent lines have no line number, the line number increments
+      automatically. Punctuation is removed around words, but Greek accents remain.
+    </p>
+    <textarea id="iliadLines" rows="8" placeholder="E.g.\n1.395\nἢ ἔπει ὤνησας...\nπολλάκι γάρ σεο πατρὸς..."></textarea>
+    <br />
+    <div class="controls">
+      <button id="generateBtn">Generate All Grids</button>
+      <button id="clearLog">Clear Log</button>
+    </div>
+    <div id="linesContainer"></div>
+    <button class="save-all-button" id="saveBtn">Save All</button>
+  </div>
+
+  <div id="logContainer">
+    <h2>Translation Log</h2>
+    <div id="translationLog"></div>
+  </div>
+
+  <!-- external script -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
