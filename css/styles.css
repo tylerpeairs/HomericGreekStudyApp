@@ -102,3 +102,16 @@ body {
     padding: 0.75rem;
     background: #fff;
   }
+
+
+#iliad‐loader label { margin-right: .5em; }
+#iliad‐loader input, #iliad‐loader select { margin-right: 1em; }
+#line-selector div { padding: 2px 4px; border-bottom: 1px solid #eee; }
+#line-selector label { cursor: pointer; display: block; }
+
+
+/* Highlight selected line items */
+.line-item.selected {
+  background-color: blue;
+  color: white;
+}
