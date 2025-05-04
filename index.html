@@ -45,6 +45,10 @@
       <input type="number" id="lastLineInput" min="1" />
     
       <button id="loadBookBtn">Load Lines</button>
+        <!-- Translation Log Section -->
+  <!-- Toggle Translation Log Visibility -->
+  <button id="toggleLogBtn" class="icon-button" title="Toggle Translation Log">📜</button>
+
     
       <div id="line-selector" class="line-selector"></div>
     
@@ -57,12 +61,12 @@
       <button class="save-all-button" id="saveBtn">Save All</button>
     </div>
   </div>
-
-  <!-- Translation Log Section -->
-  <div id="logContainer">
+  <div id="logContainer" style="display: none;">
     <h2>Translation Log</h2>
     <div id="translationLog"></div>
   </div>
+
+
 
   <!-- Main Application Script -->
   <script type="module" src="js/app.js"></script>

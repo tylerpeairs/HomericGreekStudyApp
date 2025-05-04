@@ -147,3 +147,33 @@ table, th, td {
   background-color: blue;
   color: white;
 }
+
+/* -------------------------------------------------------------------------
+   Icon Button Styles
+------------------------------------------------------------------------- */
+.icon-button {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  line-height: 1;
+  padding: 0.2em;
+  cursor: pointer;
+  vertical-align: middle;
+}
+.icon-button:hover {
+  opacity: 0.8;
+}
+
+/* -------------------------------------------------------------------------
+   Translation Log Toggle Button Positioning
+-------------------------------------------------------------------------- */
+#toggleLogBtn {
+  position: static;      /* inline with the heading */
+  margin-left: 0.5rem;   /* space between text and icon */
+  z-index: auto;
+}
+
+/* Ensure space to the right of the "Translation Log" heading */
+#logContainer h2 {
+  padding-right: 2.5rem;
+}
