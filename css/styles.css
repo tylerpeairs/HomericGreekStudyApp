@@ -1,3 +1,11 @@
+/*!
+ * styles.css
+ * Main stylesheet for HomericGreekStudyApp
+ */
+
+/* -------------------------------------------------------------------------
+   Layout
+------------------------------------------------------------------------- */
 body {
     font-family: sans-serif;
     display: flex;
@@ -16,7 +24,11 @@ body {
     min-height: 80vh;
     overflow-y: auto;
   }
-  .controls {
+
+/* -------------------------------------------------------------------------
+   Controls & Typography
+------------------------------------------------------------------------- */
+.controls {
     display: flex;
     gap: 1em;
     margin-top: 1em;
@@ -28,7 +40,11 @@ body {
     width: 100%;
     box-sizing: border-box;
   }
-  table, th, td {
+
+/* -------------------------------------------------------------------------
+   Tables
+------------------------------------------------------------------------- */
+table, th, td {
     border: 1px solid #333;
     border-collapse: collapse;
     padding: 6px;
@@ -40,7 +56,11 @@ body {
   td[contenteditable="true"] {
     background-color: #fff8dc; /* highlight for editable cells */
   }
-  .line-block {
+
+/* -------------------------------------------------------------------------
+   Line Blocks
+------------------------------------------------------------------------- */
+.line-block {
     border: 1px solid #ccc;
     padding: 1em;
     margin-bottom: 2em;
@@ -50,7 +70,17 @@ body {
     margin-bottom: 0.5em;
     white-space: pre;
   }
-  .phrase-container {
+  .save-all-button {
+    display: block;
+    margin-top: 1em;
+    padding: 8px 14px;
+    cursor: pointer;
+  }
+
+/* -------------------------------------------------------------------------
+   Phrase Guess Section
+------------------------------------------------------------------------- */
+.phrase-container {
     margin: 1em 0;
   }
   .phrase-container label {
@@ -62,12 +92,10 @@ body {
     width: 100%;
     box-sizing: border-box;
   }
-  .save-all-button {
-    display: block;
-    margin-top: 1em;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
+
+/* -------------------------------------------------------------------------
+   Translation Log
+------------------------------------------------------------------------- */
 /* 1) Make sure whitespace and line‐breaks are preserved */
 #translationLog {
     white-space: pre-wrap;
@@ -103,13 +131,17 @@ body {
     background: #fff;
   }
 
-
-#iliad‐loader label { margin-right: .5em; }
-#iliad‐loader input, #iliad‐loader select { margin-right: 1em; }
+/* -------------------------------------------------------------------------
+   Iliad Loader & Line Selector
+------------------------------------------------------------------------- */
+#iliad-loader label { margin-right: .5em; }
+#iliad-loader input, #iliad-loader select { margin-right: 1em; }
 #line-selector div { padding: 2px 4px; border-bottom: 1px solid #eee; }
 #line-selector label { cursor: pointer; display: block; }
 
-
+/* -------------------------------------------------------------------------
+   Selection Highlight
+------------------------------------------------------------------------- */
 /* Highlight selected line items */
 .line-item.selected {
   background-color: blue;

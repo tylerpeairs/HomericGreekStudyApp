@@ -8,7 +8,8 @@
 </head>
 <body>
   <div id="mainContainer">
-    <div id="iliad‐loader">
+    <!-- Iliad Loader Controls -->
+    <div id="iliad-loader">
       <label for="bookSelector">Book:</label>
       <select id="bookSelector">
         <option value="1">Book 1</option>
@@ -45,20 +46,23 @@
     
       <button id="loadBookBtn">Load Lines</button>
     
-      <div id="line-selector" style="max-height:300px; overflow:auto; border:1px solid #ccc;"></div>
+      <div id="line-selector" class="line-selector"></div>
     
       <button id="generateSelectedBtn">Generate Selected Grids</button>
     </div>
+    <!-- Generated Line Blocks -->
     <div id="linesContainer"></div>
+    <!-- Save All Translations Button -->
     <button class="save-all-button" id="saveBtn">Save All</button>
   </div>
 
+  <!-- Translation Log Section -->
   <div id="logContainer">
     <h2>Translation Log</h2>
     <div id="translationLog"></div>
   </div>
 
-  <!-- external script -->
+  <!-- Main Application Script -->
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
