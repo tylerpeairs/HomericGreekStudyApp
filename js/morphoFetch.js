@@ -14,15 +14,23 @@ export async function loadMorphoData(word) {
     return morphoCache.get(word);
   }
   try {
-    const res = await fetch(`http://localhost:3001/api/lookup?word=${encodeURIComponent(word)}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    // Proxy morphology lookup through local server API
+    const response = await fetch(
+      `http://localhost:3001/api/lookup?word=${encodeURIComponent(word)}`,
+      { mode: 'cors' }
+    );
+    if (!response.ok) {
+      throw new Error(`Morpho lookup failed: ${response.status}`);
+    }
+    // Server returns { word, parses, definitions }
+    const data = await response.json();
     // Cache and persist
     morphoCache.set(word, data);
     localStorage.setItem('morphoCache', JSON.stringify([...morphoCache]));
     return data;
   } catch (err) {
-    return { error: err.message };
+    // On error, return empty result with error message
+    return { parses: [], definitions: [], error: err.message };
   }
 }
 

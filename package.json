@@ -2,6 +2,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
     "puppeteer": "^24.7.2"
   },
   "name": "homericgreekstudyapp",
@@ -9,13 +10,16 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "http-server . -p 8000",
+    "start": "node js/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "depcheck": "^1.4.7"
+    "depcheck": "^1.4.7",
+    "http-server": "^14.1.1"
   }
 }

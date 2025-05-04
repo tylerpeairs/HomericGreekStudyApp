@@ -1,0 +1,14 @@
+services:
+  morpheus:
+    image: perseidsproject/morpheus-perseids-api:latest
+    platform: linux/amd64
+    ports:
+      - "1500:1500"
+  philologic:
+    build:
+      context: ./philoProxy
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/homeric_corpus.sqlite:/app/db.sqlite

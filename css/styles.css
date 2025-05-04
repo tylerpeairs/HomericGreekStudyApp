@@ -172,8 +172,3 @@ table, th, td {
   margin-left: 0.5rem;   /* space between text and icon */
   z-index: auto;
 }
-
-/* Ensure space to the right of the "Translation Log" heading */
-#logContainer h2 {
-  padding-right: 2.5rem;
-}
