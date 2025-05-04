@@ -1,0 +1,3 @@
+[submodule "philoProxy"]
+	path = philoProxy
+	url = https://github.com/ARTFL-Project/PhiloLogic5.git
