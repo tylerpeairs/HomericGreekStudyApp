@@ -34,7 +34,6 @@ A web-based interactive environment for studying Homeric Greek verse line by lin
 - **macOS** (Intel or Apple Silicon)  
 - **Node.js** v16+ and **npm** or **yarn**  
 - **Docker Desktop**  
-- **Python 3** (for `http-server`)  
 - **Anki** desktop with the **AnkiConnect** plugin
 
 ---
