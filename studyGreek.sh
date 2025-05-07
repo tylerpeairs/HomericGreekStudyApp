@@ -1,8 +1,22 @@
 #!/usr/bin/env bash
 # studyGreek.sh — launch Anki, static file server, API proxy, Docker services, and open browser
 
+
 # Ensure we always return to this script's directory
 cd "$(dirname "$0")"
+
+# 🚨 Ensure Docker is running
+echo "Checking if Docker is running..."
+if ! docker info >/dev/null 2>&1; then
+  echo "Docker is not running. Attempting to start Docker Desktop..."
+  open -a Docker
+  # Wait until Docker daemon is ready
+  while ! docker info >/dev/null 2>&1; do
+    echo "Waiting for Docker to launch..."
+    sleep 2
+  done
+fi
+echo "Docker is running."
 
 # On exit, stop Docker services and kill all backgrounded jobs
 trap 'docker compose down; kill $(jobs -p)' EXIT
