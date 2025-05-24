@@ -48,8 +48,10 @@ export function createLineBlock(lineNumber, text) {
   `;
   const tbody = table.querySelector('tbody');
   text.split(/\s+/).forEach(raw => {
-    const word = raw.replace(/[.,;:"·!?()[\]{}<>…]/g, '');
-    if (!word) return;
+    // Extract only letters and apostrophes (both straight and typographic)
+    const match = raw.match(/[\p{L}'’]+/gu);
+    if (!match) return; 
+    const word = match[0];
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><span lang="grc" class="morpho-word" style="cursor:pointer">${word}</span></td>
