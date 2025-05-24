@@ -6,81 +6,127 @@ const TEI_NS = 'http://www.tei-c.org/ns/1.0';
 let _translationIndex = null;
 
 /**
+ * Fetches and processes a single translation XML file.
+ * @param {string} filePath - Path to the XML file.
+ * @returns {Promise<object|null>} - A promise that resolves to the file index or null if loading fails.
+ */
+async function _fetchAndProcessFile(filePath) {
+  try {
+    const resp = await fetch(filePath);
+    if (!resp.ok) {
+      console.error(`Could not load translation XML: ${filePath} - Status: ${resp.status}`);
+      return null;
+    }
+    const xmlText = await resp.text();
+    const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
+
+    const transDiv = Array.from(doc.getElementsByTagNameNS(TEI_NS, 'div'))
+      .find(el => el.getAttribute('type') === 'translation');
+    if (!transDiv) {
+      console.error(`No <div type="translation"> found in ${filePath}`);
+      return null;
+    }
+
+    const fileIndex = {};
+    const bookEls = Array.from(transDiv.getElementsByTagNameNS(TEI_NS, 'div'))
+      .filter(el => el.getAttribute('type') === 'textpart' && el.getAttribute('subtype') === 'book');
+
+    bookEls.forEach(bookEl => {
+      const bookNum = bookEl.getAttribute('n');
+      const entries = [];
+      const walker = document.createTreeWalker(
+        bookEl,
+        NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+        null,
+        false
+      );
+
+      let currentEntry = null;
+      let foundFirstMilestone = false;
+
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          node.localName === 'milestone' &&
+          node.getAttribute('unit') === 'line'
+        ) {
+          const n = parseInt(node.getAttribute('n'), 10);
+          if (n % 5 === 0) {
+            if (!foundFirstMilestone && currentEntry && currentEntry.text.trim()) {
+              currentEntry.n = 1; // Assign pre-milestone text to line 1
+              entries.push(currentEntry);
+            } else if (currentEntry && currentEntry.n !== null) {
+              entries.push(currentEntry);
+            }
+            foundFirstMilestone = true;
+            currentEntry = { n, text: '' };
+          }
+        } else if (node.nodeType === Node.TEXT_NODE) {
+          if (!currentEntry) {
+            // Handles text before the first milestone (e.g. book title)
+            // which we might want to assign to a nominal line number or handle differently.
+            // For now, it initializes an entry that will get a line number at the first milestone.
+            currentEntry = { n: null, text: '' };
+          }
+          currentEntry.text += node.textContent;
+        }
+      }
+
+      if (currentEntry && currentEntry.n !== null) {
+        entries.push(currentEntry);
+      }
+      fileIndex[bookNum] = entries;
+    });
+    return fileIndex;
+  } catch (error) {
+    console.error(`Error processing translation XML: ${filePath}`, error);
+    return null;
+  }
+}
+
+/**
  * Build a per-book array of translation entries based on <milestone unit="line"/>
  * for every 5th line. Each entry has { n, text }.
  */
 async function _buildTranslationIndex() {
   if (_translationIndex) return _translationIndex;
-  const resp = await fetch('data/murrayTranslation.xml');
-  if (!resp.ok) throw new Error(`Could not load translation XML: ${resp.status}`);
-  const xmlText = await resp.text();
-  const doc = new DOMParser().parseFromString(xmlText, 'application/xml');
-  // console.log("Parsed Murray translation XML");
- 
-  // Find the main translation container
-  const transDiv = Array.from(doc.getElementsByTagNameNS(TEI_NS, 'div'))
-    .find(el => el.getAttribute('type') === 'translation');
-  if (!transDiv) throw new Error('No <div type="translation"> found');
- 
-  _translationIndex = {};
- 
-  // For each Book
-  const bookEls = Array.from(transDiv.getElementsByTagNameNS(TEI_NS, 'div'))
-    .filter(el => el.getAttribute('type') === 'textpart' && el.getAttribute('subtype') === 'book');
-  // console.log(`Found ${bookEls.length} books in translation XML`);
-bookEls.forEach(bookEl => {
-  const bookNum = bookEl.getAttribute('n');
-  // console.log(`Processing book ${bookNum}`);
 
-  const entries = [];
-  const walker = document.createTreeWalker(
-    bookEl,
-    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
+  _translationIndex = {}; // Initialize
 
-  let currentEntry = null;
-  let foundFirstMilestone = false;
+  const murrayIndex = await _fetchAndProcessFile('data/murrayTranslation.xml');
+  if (!murrayIndex) {
+    throw new Error('Could not load mandatory translation file: data/murrayTranslation.xml');
+  }
+  _translationIndex = murrayIndex;
 
-  while (walker.nextNode()) {
-    const node = walker.currentNode;
+  const butlerIndex = await _fetchAndProcessFile('data/butlerTranslation.xml');
 
-    if (
-      node.nodeType === Node.ELEMENT_NODE &&
-      node.localName === 'milestone' &&
-      node.getAttribute('unit') === 'line'
-    ) {
-      const n = parseInt(node.getAttribute('n'), 10);
-      if (n % 5 === 0) {
-        if (!foundFirstMilestone && currentEntry && currentEntry.text.trim()) {
-          // Assign pre-milestone text to line 1
-          currentEntry.n = 1;
-          entries.push(currentEntry);
-        } else if (currentEntry && currentEntry.n !== null) {
-          entries.push(currentEntry);
+  if (butlerIndex) {
+    for (const bookNum in butlerIndex) {
+      if (butlerIndex.hasOwnProperty(bookNum)) {
+        const butlerBookEntries = butlerIndex[bookNum];
+        if (_translationIndex[bookNum]) {
+          // Book exists in Murray, merge entries
+          const murrayBookEntries = _translationIndex[bookNum];
+          butlerBookEntries.forEach(butlerEntry => {
+            const existingEntry = murrayBookEntries.find(entry => entry.n === butlerEntry.n);
+            if (existingEntry) {
+              existingEntry.text = butlerEntry.text; // Overwrite
+            } else {
+              murrayBookEntries.push(butlerEntry); // Add new entry
+            }
+          });
+          // Re-sort if new entries were added
+          murrayBookEntries.sort((a, b) => a.n - b.n);
+        } else {
+          // Book does not exist in Murray, add entirely from Butler
+          _translationIndex[bookNum] = butlerBookEntries;
         }
-
-        foundFirstMilestone = true;
-        currentEntry = { n, text: '' };
       }
-    } else if (node.nodeType === Node.TEXT_NODE) {
-      if (!currentEntry) {
-        currentEntry = { n: null, text: '' };
-      }
-      currentEntry.text += node.textContent;
     }
   }
-
-  // Push any remaining text
-  if (currentEntry && currentEntry.n !== null) {
-    entries.push(currentEntry);
-  }
-
-  // console.log(`Book ${bookNum} has ${entries.length} translation entries`);
-  _translationIndex[bookNum] = entries;
-});
- 
   return _translationIndex;
 }
 
