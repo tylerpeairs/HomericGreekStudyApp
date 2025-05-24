@@ -101,11 +101,14 @@ export function createLineBlock(lineNumber, text) {
     span.style.cursor = 'pointer';
     span.addEventListener('click', async () => {
       const word = span.textContent;
-      const count = await fetchResultsLength(word);
-      let data;
+      let count, data;
       try {
-        data = await loadMorphoData(word);
+        [count, data] = await Promise.all([
+          fetchResultsLength(word),
+          loadMorphoData(word)
+        ]);
       } catch {
+        count = await fetchResultsLength(word);
         data = null;
       }
       const html = `<p>Corpus hits: ${count}</p>` +

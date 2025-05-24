@@ -14,7 +14,7 @@ import cors from 'cors';
 const app = express();
 app.use(cors());
 const PORT = process.env.PORT || 3001;
-
+console.log('Node is running as architecture:', process.arch);
 /**
  * GET /api/hits
  * Retrieves the number of concordance hits for a Greek word in the Iliad.
@@ -24,24 +24,34 @@ const PORT = process.env.PORT || 3001;
  */
 app.get('/api/hits', async (req, res) => {
   const { word } = req.query;
-  if (!word) return res.status(400).json({ error: 'Missing word' });
+  if (!word) {
+    console.log('No word provided in query.');
+    return res.status(400).json({ error: 'Missing word' });
+  }
 
   try {
-    // Build ARTFL PHILologic URL for concordance query
-    const url = `https://artflsrv03.uchicago.edu/philologic4/Greek/query?report=concordance&method=phrase&q=${encodeURIComponent(word)}&start=0&end=0&author=&script=&frequency_field=&arg=&sort_order=rowid&title=%22Iliad%22`
-    // Launch headless browser
+    console.log(`Fetching concordance hits for word: ${word}`);
+    const url = `https://artflsrv03.uchicago.edu/philologic4/Greek/query?report=concordance&method=phrase&q=${encodeURIComponent(word)}&start=0&end=0&author=&script=&frequency_field=&arg=&sort_order=rowid&title=%22Iliad%22`;
+    console.log(`Visiting URL: ${url}`);
+
     const browser = await puppeteer.launch({ headless: true });
-    // Navigate to query page and wait for network idle
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
-    // Wait for results to load and extract hit count
-    await page.waitForSelector('#search-hits[description]', { timeout: 10000 });
-    const count = await page.$eval('#search-hits', el => JSON.parse(el.getAttribute('description')).resultsLength);
-    // Close the browser
-    await browser.close();
-    // Respond with JSON containing hit count
-    res.json({ resultsLength: count });
+    console.log(`Page loaded: ${url}`);
+
+    const selector = '#search-hits[description]';
+    if (await page.$(selector)) {
+      const count = await page.$eval('#search-hits', el => JSON.parse(el.getAttribute('description')).resultsLength);
+      console.log(`Found hit count: ${count}`);
+      await browser.close();
+      res.json({ resultsLength: count });
+    } else {
+      console.log('Selector not found. Returning 0 results.');
+      await browser.close();
+      res.json({ resultsLength: 0 });
+    }
   } catch (err) {
+    console.error(`Error fetching hits for word "${word}":`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -57,16 +67,18 @@ app.get('/api/lookup', async (req, res) => {
   const word = req.query.word || '';
   if (!word) return res.status(400).json({ error: 'Missing word' });
   try {
-    // Build Logeion Morpho URL for the word
+    console.log(`Fetching morphology for word: ${word}`);
     const url = `https://logeion.uchicago.edu/morpho/${encodeURIComponent(word)}`;
-    // Launch headless browser
+    console.log(`Visiting URL: ${url}`);
+
     const browser = await puppeteer.launch({ headless: true });
-    // Navigate to the Logeion page and wait for content
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
+    console.log(`Page loaded: ${url}`);
 
-    // Scrape morphological parses and short definitions
-    await page.waitForSelector('ul.parse li', { timeout: 10000 });
+    await page.waitForSelector('ul.parse li');
+    console.log('Found morphological parse selector.');
+
     const parses = await page.$$eval('ul.parse li', lis =>
       lis.map(li => {
         const lemmaNode = li.querySelector('p a');
@@ -77,20 +89,22 @@ app.get('/api/lookup', async (req, res) => {
       })
     );
 
-    // 2) Scrape short definitions if present
     let definitions = [];
     const shortDefSelector = 'div[ng-if="vm.shortDef.length > 0"] ul li';
     if (await page.$(shortDefSelector)) {
+      console.log('Found short definition selector.');
       definitions = await page.$$eval(shortDefSelector, lis =>
         lis.map(li => li.textContent.trim())
       );
+    } else {
+      console.log('No short definitions found.');
     }
 
-    // Close the browser
     await browser.close();
-    // Respond with JSON containing word, parses, definitions
+    console.log(`Returning results for word: ${word}`);
     res.json({ word, parses, definitions });
   } catch (err) {
+    console.error(`Error fetching morphology for word "${word}":`, err);
     res.status(500).json({ error: err.message });
   }
 });

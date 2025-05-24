@@ -9,9 +9,13 @@ const morphoCache = new Map(stored);
  * on subsequent lookups it serves instantly from localStorage.
  */
 export async function loadMorphoData(word) {
-  // Serve from cache if available
+  // Serve from cache if available and valid
   if (morphoCache.has(word)) {
-    return morphoCache.get(word);
+    const cached = morphoCache.get(word);
+    const html = generateMorphoHtml(cached);
+    if (!html.includes('No data found')) {
+      return cached;
+    }
   }
   try {
     const res = await fetch(`http://localhost:3001/api/lookup?word=${encodeURIComponent(word)}`);

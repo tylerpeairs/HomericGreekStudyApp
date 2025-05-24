@@ -17,7 +17,7 @@ import { startTime } from './app.js';
 export function restoreLineSelector() {
   const cacheJSON = localStorage.getItem('iliadCache');
   if (!cacheJSON) return;
-  const { bookNum, firstLine, lastLine } = JSON.parse(cacheJSON);
+  const { bookNum, firstLine } = JSON.parse(cacheJSON);
   document.getElementById('bookSelector').value = bookNum;
   document.getElementById('firstLineInput').value = firstLine;
   // Re-trigger loading of lines
