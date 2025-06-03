@@ -21,7 +21,7 @@ lsof -ti tcp:3001 | xargs kill -9 2>/dev/null
 trap 'kill $(jobs -p)' EXIT
 
 echo "Starting Anki..."
-open -g -a "Anki" &
+open -a "Anki"
 
 echo "Starting static file server on http://localhost:8000..."
 python3 -m http.server 8000 &
