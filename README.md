@@ -13,12 +13,12 @@ A web-based tool for studying Homer's *Iliad* in the original Greek.
 - [License](#license)
 
 ## Features
-- Renders line blocks for Homeric Greek study: headers with line numbers and text; word tables with editable fields and Anki checkboxes; phrase-guess inputs and translation reveal; clickable Greek words loading corpus counts & morphology.【F:js/ui.js†L2-L8】
-- Loads Iliad Greek lines from TEI XML file.【F:js/bookLoader.js†L1-L7】
-- Loads and caches Lattimore translation XML, indexed by book and line number.【F:js/translationLoader.js†L1-L3】
-- Fetches morphological data and definitions via a local Puppeteer proxy server.【F:js/morphoFetch.js†L6-L8】【F:js/server.js†L1-L6】
-- Fetches corpus hit counts from ARTFL PHILologic via the Puppeteer proxy server.【F:js/corpusFetch.js†L6-L9】【F:js/server.js†L1-L6】
-- Manages translation logs and timing in `localStorage`, with optional Anki export.【F:js/storage.js†L2-L6】【F:js/flashcard.js†L2-L5】
+- Renders line blocks for Homeric Greek study: headers with line numbers and text; word tables with editable fields and Anki checkboxes; phrase-guess inputs and translation reveal; clickable Greek words loading corpus counts & morphology.
+- Loads Iliad Greek lines from TEI XML file.
+- Loads and caches Lattimore translation XML, indexed by book and line number.
+- Fetches morphological data and definitions via a local Puppeteer proxy server.
+- Fetches corpus hit counts from ARTFL PHILologic via the Puppeteer proxy server.
+- Manages translation logs and timing in `localStorage`, with optional Anki export.
 
 ## Prerequisites
 - macOS (for shell script and `open`) with [Anki](https://apps.ankiweb.net/) installed.
