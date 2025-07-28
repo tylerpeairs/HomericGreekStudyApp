@@ -40,6 +40,7 @@ export function invoke(action, version, params={}) {
         xhr.addEventListener('error', () => reject('failed to issue request'));
         xhr.addEventListener('load', () => {
             try {
+                console.log('Raw response:', xhr.responseText); // Log raw response
                 const response = JSON.parse(xhr.responseText);
                 if (Object.getOwnPropertyNames(response).length != 2) {
                     throw 'response has an unexpected number of fields';
@@ -59,6 +60,7 @@ export function invoke(action, version, params={}) {
             }
         });
 
+        console.log('Sending request:', { action, version, params }); // Log request details
         xhr.open('POST', 'http://127.0.0.1:8765');
         xhr.send(JSON.stringify({action, version, params}));
     });
