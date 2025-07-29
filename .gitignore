@@ -1,15 +1,8 @@
 node_modules/
-.env
 .DS_Store
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.vscode/
-.idea/
-dist/
-build/
-coverage/
-.nyc_output/
-.cache/
-.parcel-cache/
+js/server.js # if you don’t want to commit local server credentials
+*.env
+todo.txt
+start.sh
+.env
