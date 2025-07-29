@@ -42,7 +42,6 @@ Run the helper script to launch Anki, start servers, and open your browser:
 ```bash
 ./studyGreek.sh
 ```
-【F:studyGreek.sh†L2-L8】【F:studyGreek.sh†L26-L28】【F:studyGreek.sh†L29-L31】
 
 ### Manual steps
 ```bash
@@ -62,17 +61,17 @@ open http://localhost:8000
 ├── css/                   # Stylesheets for the UI
 ├── data/                  # TEI XML sources (Greek text and translation)
 ├── js/                    # JavaScript modules (front-end and proxy server)
-│   ├── server.js          # Puppeteer proxy service (Express)【F:js/server.js†L1-L6】
-│   ├── ui.js              # UI rendering logic【F:js/ui.js†L2-L8】
-│   ├── bookLoader.js      # Iliad XML loader【F:js/bookLoader.js†L1-L7】
-│   ├── translationLoader.js# Translation XML loader【F:js/translationLoader.js†L1-L3】
-│   ├── corpusFetch.js     # ARTFL concordance fetcher【F:js/corpusFetch.js†L6-L9】
-│   ├── morphoFetch.js     # Logeion morphology fetcher【F:js/morphoFetch.js†L6-L8】
-│   ├── flashcard.js       # AnkiConnect integration【F:js/flashcard.js†L2-L5】
-│   └── storage.js         # LocalStorage log & flashcard trigger【F:js/storage.js†L2-L6】
-├── index.html             # Entry point for the study UI【F:index.html†L5-L8】
-├── studyGreek.sh          # Launch script (Anki, servers & browser)【F:studyGreek.sh†L2-L8】
-├── package.json           # Project metadata & dependencies【F:package.json†L2-L6】【F:package.json†L7-L16】
+│   ├── server.js          # Puppeteer proxy service (Express)
+│   ├── ui.js              # UI rendering logic
+│   ├── bookLoader.js      # Iliad XML loader
+│   ├── translationLoader.js# Translation XML loader
+│   ├── corpusFetch.js     # ARTFL concordance fetcher
+│   ├── morphoFetch.js     # Logeion morphology fetcher
+│   ├── flashcard.js       # AnkiConnect integration
+│   └── storage.js         # LocalStorage log & flashcard trigger
+├── index.html             # Entry point for the study UI
+├── studyGreek.sh          # Launch script (Anki, servers & browser)
+├── package.json           # Project metadata & dependencies
 └── README.md              # This file
 ```
 
