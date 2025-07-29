@@ -1,179 +1,644 @@
 /*!
  * styles.css
- * Main stylesheet for HomericGreekStudyApp
+ * Modern stylesheet for HomericGreekStudyApp
  */
+
+/* -------------------------------------------------------------------------
+   CSS Variables & Reset
+------------------------------------------------------------------------- */
+:root {
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --secondary-color: #64748b;
+  --accent-color: #0ea5e9;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
+  --error-color: #ef4444;
+  
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  
+  --border-radius: 8px;
+  --border-radius-lg: 12px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  --font-greek: 'Times New Roman', 'Palatino Linotype', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 /* -------------------------------------------------------------------------
    Layout
 ------------------------------------------------------------------------- */
 body {
-    font-family: sans-serif;
-    display: flex;
-    margin: 1em;
-  }
-  #mainContainer {
-    flex: 1;
-    margin-right: 1em;
-  }
-  #logContainer {
-    flex: 0 0 45%;
-    max-height: 80vh;
-    border-left: 1px solid #ccc;
-    padding-left: 1em;
-    box-sizing: border-box;
-    min-height: 80vh;
-    overflow-y: auto;
-  }
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--neutral-800);
+  background-color: var(--neutral-50);
+  margin: 0;
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+}
+
+#mainContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+#logContainer {
+  flex: 0 0 45%;
+  max-height: 85vh;
+  background: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  overflow-y: auto;
+  position: sticky;
+  top: 24px;
+}
 
 /* -------------------------------------------------------------------------
-   Controls & Typography
+   Typography
+------------------------------------------------------------------------- */
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--neutral-900);
+  margin: 0 0 24px 0;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--neutral-800);
+  margin: 0 0 16px 0;
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--neutral-700);
+  margin: 16px 0 8px 0;
+}
+
+/* -------------------------------------------------------------------------
+   Controls & Forms
 ------------------------------------------------------------------------- */
 .controls {
-    display: flex;
-    gap: 1em;
-    margin-top: 1em;
-  }
-  h1, h2 {
-    margin-top: 0;
-  }
-  textarea {
-    width: 100%;
-    box-sizing: border-box;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+label {
+  font-weight: 500;
+  color: var(--neutral-700);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+input, select, textarea {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid var(--neutral-300);
+  border-radius: var(--border-radius);
+  background: white;
+  color: var(--neutral-800);
+  transition: all 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+input:hover, select:hover, textarea:hover {
+  border-color: var(--neutral-400);
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* -------------------------------------------------------------------------
+   Buttons
+------------------------------------------------------------------------- */
+button {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  background: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  background: var(--neutral-300);
+  color: var(--neutral-500);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.translation-btn {
+  background: var(--accent-color);
+  font-size: 13px;
+  padding: 8px 14px;
+}
+
+.translation-btn:hover {
+  background: #0284c7;
+}
+
+.tutor-btn {
+  background: var(--success-color);
+  font-size: 13px;
+  padding: 8px 14px;
+  margin-top: 12px;
+}
+
+.tutor-btn:hover {
+  background: #059669;
+}
+
+.save-all-button {
+  background: var(--warning-color);
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 24px;
+}
+
+.save-all-button:hover {
+  background: #d97706;
+}
 
 /* -------------------------------------------------------------------------
    Tables
 ------------------------------------------------------------------------- */
-table, th, td {
-    border: 1px solid #333;
-    border-collapse: collapse;
-    padding: 6px;
-  }
-  th {
-    background-color: #f2f2f2;
-    width: 400px;
-  }
-  td[contenteditable="true"] {
-    background-color: #fff8dc; /* highlight for editable cells */
-  }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin: 16px 0;
+}
+
+th {
+  background: var(--neutral-100);
+  color: var(--neutral-700);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--neutral-200);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--neutral-100);
+  vertical-align: top;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover {
+  background: var(--neutral-50);
+}
+
+td[contenteditable="true"] {
+  background: var(--neutral-50);
+  border-radius: 4px;
+  min-height: 20px;
+  transition: all 0.2s ease;
+}
+
+td[contenteditable="true"]:focus {
+  background: white;
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+}
+
+td[contenteditable="true"]:hover {
+  background: white;
+}
 
 /* -------------------------------------------------------------------------
    Line Blocks
 ------------------------------------------------------------------------- */
 .line-block {
-    border: 1px solid #ccc;
-    padding: 1em;
-    margin-bottom: 2em;
-  }
-  .line-header {
-    font-weight: bold;
-    margin-bottom: 0.5em;
-    white-space: pre;
-  }
-  .save-all-button {
-    display: block;
-    margin-top: 1em;
-    padding: 8px 14px;
-    cursor: pointer;
-  }
+  background: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.line-block:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--neutral-300);
+}
+
+.line-header {
+  font-family: var(--font-greek);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--neutral-900);
+  margin-bottom: 20px;
+  padding: 16px;
+  background: var(--neutral-50);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--primary-color);
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
 
 /* -------------------------------------------------------------------------
    Phrase Guess Section
 ------------------------------------------------------------------------- */
 .phrase-container {
-    margin: 1em 0;
-  }
-  .phrase-container label {
-    display: block;
-    font-weight: bold;
-    margin: 0.5em 0 0.25em;
-  }
-  .phrase-input {
-    width: 100%;
-    box-sizing: border-box;
-  }
+  margin-top: 24px;
+  padding: 20px;
+  background: var(--neutral-50);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--neutral-200);
+}
+
+.phrase-container label {
+  display: block;
+  font-weight: 600;
+  color: var(--neutral-700);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.phrase-input {
+  width: 100%;
+  margin-bottom: 12px;
+  font-family: var(--font-sans);
+}
+
+.translation-chunk {
+  margin-top: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--neutral-200);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+.translation-chunk div {
+  margin-bottom: 8px;
+}
+
+.translation-chunk strong {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.tutor-output {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--neutral-100);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--success-color);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* -------------------------------------------------------------------------
+   Morphology Output
+------------------------------------------------------------------------- */
+.morpho-output {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--neutral-50);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--neutral-200);
+  font-size: 14px;
+}
+
+.morpho-output h3 {
+  color: var(--primary-color);
+  font-size: 15px;
+  margin-top: 0;
+}
+
+.morpho-output ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.morpho-output li {
+  margin-bottom: 4px;
+}
+
+.morpho-output strong {
+  color: var(--neutral-800);
+}
 
 /* -------------------------------------------------------------------------
    Translation Log
 ------------------------------------------------------------------------- */
-/* 1) Make sure whitespace and line‐breaks are preserved */
 #translationLog {
-    white-space: pre-wrap;
-    font-family: Menlo, Consolas, "Courier New", monospace;
-    line-height: 1.5;
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 1rem;
-    margin: 1rem 0;
-    overflow-x: auto;
-    display: block;
-  }
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
 
-  .translation-block {
-    width: 100%
-  }
-  
-  
-  /* 3) Give the START/END markers a bit of color so they stand out */
-  #translationLog span.marker {
-    display: block;
-    font-weight: bold;
-    color: #555;
-    background: #eee;
-    padding: 0.25rem 0.5rem;
-    margin: 0.5rem 0;
-  }
-  
-  #translationLog .block {
-    border: 1px solid #ccc;
-    padding: 0.75rem;
-    background: #fff;
-  }
+.translation-block {
+  background: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.translation-block p {
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.translation-grid {
+  margin: 12px 0;
+  font-size: 13px;
+}
+
+.translation-grid th {
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+.translation-grid td {
+  padding: 8px 12px;
+}
 
 /* -------------------------------------------------------------------------
    Iliad Loader & Line Selector
 ------------------------------------------------------------------------- */
-#iliad-loader label { margin-right: .5em; }
-#iliad-loader input, #iliad-loader select { margin-right: 1em; }
-#line-selector div { padding: 2px 4px; border-bottom: 1px solid #eee; }
-#line-selector label { cursor: pointer; display: block; }
+#iliad-loader {
+  background: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+#iliad-loader .controls {
+  margin-bottom: 20px;
+}
+
+#line-selector {
+  background: var(--neutral-50);
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius);
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 16px 0;
+}
+
+.line-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--neutral-200);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-greek);
+  font-size: 14px;
+  line-height: 1.5;
+  user-select: none;
+}
+
+.line-item:last-child {
+  border-bottom: none;
+}
+
+.line-item:hover {
+  background: var(--neutral-100);
+}
+
+.line-item.selected {
+  background: var(--primary-color);
+  color: white;
+}
+
+.line-item.selected:hover {
+  background: var(--primary-hover);
+}
 
 /* -------------------------------------------------------------------------
-   Selection Highlight
+   Interactive Elements
 ------------------------------------------------------------------------- */
-/* Highlight selected line items */
-.line-item.selected {
-  background-color: blue;
+.morpho-word {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-family: var(--font-greek);
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.morpho-word:hover {
+  background: var(--primary-color);
   color: white;
+  transform: translateY(-1px);
 }
 
 /* -------------------------------------------------------------------------
    Icon Button Styles
 ------------------------------------------------------------------------- */
 .icon-button {
-  background: none;
+  background: var(--neutral-200);
+  color: var(--neutral-600);
   border: none;
-  font-size: 1.5em;
+  font-size: 16px;
   line-height: 1;
-  padding: 0.2em;
+  padding: 8px;
   cursor: pointer;
-  vertical-align: middle;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .icon-button:hover {
-  opacity: 0.8;
+  background: var(--neutral-300);
+  color: var(--neutral-700);
+  transform: translateY(-1px);
 }
 
 /* -------------------------------------------------------------------------
-   Translation Log Toggle Button Positioning
--------------------------------------------------------------------------- */
-#toggleLogBtn {
-  position: static;      /* inline with the heading */
-  margin-left: 0.5rem;   /* space between text and icon */
-  z-index: auto;
+   Checkboxes
+------------------------------------------------------------------------- */
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
 }
 
-/* Ensure space to the right of the "Translation Log" heading */
-#logContainer h2 {
-  padding-right: 2.5rem;
+/* -------------------------------------------------------------------------
+   Save Container
+------------------------------------------------------------------------- */
+#saveContainer {
+  text-align: center;
+  margin-top: 32px;
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* -------------------------------------------------------------------------
+   Responsive Design
+------------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+  body {
+    flex-direction: column;
+    padding: 16px;
+  }
+  
+  #logContainer {
+    flex: none;
+    max-height: 400px;
+    position: static;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .controls > * {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding: 12px;
+  }
+  
+  .line-block {
+    padding: 16px;
+  }
+  
+  #iliad-loader {
+    padding: 16px;
+  }
+  
+  table {
+    font-size: 13px;
+  }
+  
+  th, td {
+    padding: 8px 12px;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Animations
+------------------------------------------------------------------------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.line-block {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.translation-chunk > div {
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* -------------------------------------------------------------------------
+   Focus States
+------------------------------------------------------------------------- */
+button:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.line-item:focus-visible {
+  outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
 }
