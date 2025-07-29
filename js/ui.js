@@ -106,7 +106,12 @@ export function createLineBlock(lineNumber, text) {
           words.push({ word, translationGuess, formGuess });
         });
         const phraseGuess = phraseContainer.querySelector('.phrase-input').value.trim();
-        const payload = { lineNumber, originalLine, translationLines, words, phraseGuess };
+        const payload = {
+          lineNumber,                         // target line number in the Iliad
+          originalLine,                       // Greek text of the target line
+          wordGuesses: words,                 // array of objects with { word, translationGuess, formGuess }
+          userTranslation: phraseGuess        // the user’s full-phrase translation guess
+        };
         try {
           console.log('Tutor Analysis Payload:', payload);
           const analysis = await requestAnalysis(payload);

@@ -132,7 +132,7 @@ app.post('/api/tutor-analysis', async (req, res) => {
   try {
     const payload = req.body;
     console.log('Tutor-analysis payload:', payload);
-    const systemPrompt = 'You are a specialized Homeric Greek tutor: given the original Greek line, the user’s word- and phrase-level guesses, and their morphological analyses, pinpoint mistranslations, omissions, and syntactic issues, supply correct lemmas and grammatical notes, render a polished literal translation, and offer one brief tip for improvement.';
+    const systemPrompt = 'You are a specialized Homeric Greek tutor: given the original Greek line, the user’s word- and phrase-level guesses, and their morphological analyses, pinpoint mistranslations, omissions, and syntactic issues, supply correct lemmas and grammatical notes, render a polished literal translation, and always offer one brief tip for improvement.';
     const userContent = JSON.stringify(payload, null, 2);
     const response = await lambdaClient.chat.completions.create({
       model: 'llama-4-scout-17b-16e-instruct',
