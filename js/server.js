@@ -3,18 +3,33 @@
  * Express server providing:
  *  - /api/hits endpoint: fetches corpus hit counts from ARTFL PHILologic via Puppeteer
  *  - /api/lookup endpoint: scrapes morphological parses and short definitions from Logeion via Puppeteer
+ *  - /api/tutor-analysis endpoint: provides Homeric Greek tutor analysis via Lambda Labs
  * Author: Tyler Peairs
  */
 // --- External libraries ---
 import express from 'express';
 import puppeteer from 'puppeteer';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import { OpenAI } from 'openai';
+dotenv.config();
+
+const LAMBDA_API_KEY = process.env.LAMBDA_API_KEY;
+if (!LAMBDA_API_KEY) {
+  throw new Error('Missing LAMBDA_API_KEY in environment');
+}
+const lambdaClient = new OpenAI({
+  apiKey: LAMBDA_API_KEY,
+  baseURL: 'https://api.lambda.ai/v1',
+});
 
 // Initialize Express app and enable CORS for all routes
 const app = express();
 app.use(cors());
+app.use(express.json());
 const PORT = process.env.PORT || 3001;
 console.log('Node is running as architecture:', process.arch);
+
 /**
  * GET /api/hits
  * Retrieves the number of concordance hits for a Greek word in the Iliad.
@@ -105,6 +120,34 @@ app.get('/api/lookup', async (req, res) => {
     res.json({ word, parses, definitions });
   } catch (err) {
     console.error(`Error fetching morphology for word "${word}":`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/tutor-analysis
+ * Receives translation payload and returns tutor analysis via Lambda Labs.
+ */
+app.post('/api/tutor-analysis', async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log('Tutor-analysis payload:', payload);
+    const systemPrompt = 'You are a specialized Homeric Greek tutor: given the original Greek line, the user’s word- and phrase-level guesses, and their morphological analyses, pinpoint mistranslations, omissions, and syntactic issues, supply correct lemmas and grammatical notes, render a polished literal translation, and offer one brief tip for improvement.';
+    const userContent = JSON.stringify(payload, null, 2);
+    const response = await lambdaClient.chat.completions.create({
+      model: 'llama-4-scout-17b-16e-instruct',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userContent },
+      ],
+    });
+    console.log('Lambda completion raw response:', response);
+    console.log('Lambda response choices:', response.choices);
+    const analysis = response.choices?.[0]?.message?.content || '';
+    console.log('Extracted analysis:', analysis);
+    res.json({ analysis });
+  } catch (err) {
+    console.error('Error in tutor-analysis:', err);
     res.status(500).json({ error: err.message });
   }
 });

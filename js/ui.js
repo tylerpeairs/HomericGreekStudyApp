@@ -14,6 +14,7 @@ import { loadMorphoData, generateMorphoHtml } from './morphoFetch.js';
 
 // --- Translation loader for Murray chunks ---
 import { getTranslationChunk } from './translationLoader.js';
+import { requestAnalysis } from './analysisLoader.js';
 
 export function createLineBlock(lineNumber, text) {
   const container = document.getElementById('linesContainer');
@@ -86,6 +87,43 @@ export function createLineBlock(lineNumber, text) {
         .map(c => `<div><strong>${c.n}</strong> ${c.text}</div>`)
         .join('');
       output.innerHTML = html;
+      // Add Tutor Analysis button
+      const tutorBtn = document.createElement('button');
+      tutorBtn.type = 'button';
+      tutorBtn.className = 'tutor-btn';
+      tutorBtn.textContent = 'Tutor Analysis';
+      phraseContainer.appendChild(tutorBtn);
+      tutorBtn.addEventListener('click', async () => {
+        // Build payload for Tutor Analysis
+        const lineNumber = block.dataset.lineNumber;
+        const originalLine = block.dataset.originalLine;
+        const translationLines = chunk; // use the `chunk` variable from the outer scope
+        const words = [];
+        table.querySelectorAll('tbody tr').forEach(row => {
+          const word = row.querySelector('.morpho-word').textContent;
+          const translationGuess = row.children[1].textContent.trim();
+          const formGuess = row.children[2].textContent.trim();
+          words.push({ word, translationGuess, formGuess });
+        });
+        const phraseGuess = phraseContainer.querySelector('.phrase-input').value.trim();
+        const payload = { lineNumber, originalLine, translationLines, words, phraseGuess };
+        try {
+          console.log('Tutor Analysis Payload:', payload);
+          const analysis = await requestAnalysis(payload);
+          console.log('Tutor Analysis Response:', analysis);
+          // Display analysis below button
+          let outputDiv = phraseContainer.querySelector('.tutor-output');
+          if (!outputDiv) {
+            outputDiv = document.createElement('div');
+            outputDiv.className = 'tutor-output';
+            outputDiv.style.whiteSpace = 'pre-wrap';
+            phraseContainer.appendChild(outputDiv);
+          }
+          outputDiv.textContent = analysis;
+        } catch (err) {
+          console.error('Tutor Analysis Error:', err);
+        }
+      });
     } catch (err) {
       output.innerHTML = `<p>Error loading translation: ${err.message}</p>`;
     }
