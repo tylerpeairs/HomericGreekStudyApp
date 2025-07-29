@@ -5,6 +5,7 @@ A web-based tool for studying Homer's *Iliad* in the original Greek.
 ## Table of Contents
 - [Features](#features)
 - [Prerequisites](#prerequisites)
+- [Configuration](#configuration)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Project Structure](#project-structure)
@@ -19,11 +20,21 @@ A web-based tool for studying Homer's *Iliad* in the original Greek.
 - Fetches morphological data and definitions via a local Puppeteer proxy server.
 - Fetches corpus hit counts from ARTFL PHILologic via the Puppeteer proxy server.
 - Manages translation logs and timing in `localStorage`, with optional Anki export.
+- AI-powered tutor analysis: users submit their translation guesses and receive detailed feedback on translation accuracy, morphology, and syntax.
 
 ## Prerequisites
 - macOS (for shell script and `open`) with [Anki](https://apps.ankiweb.net/) installed.
 - [Node.js 22.16.0](https://nodejs.org/) (managed via [nvm](https://github.com/nvm-sh/nvm)).
 - Python 3 (for static file server).
+- A Lambda Labs API key (set via the `LAMBDA_API_KEY` environment variable)
+
+## Configuration
+1. Obtain your Lambda Labs API key from your Lambda account dashboard.
+2. Create a `.env` file in the project root with the following content:
+   ```
+   LAMBDA_API_KEY=your_lambda_api_key_here
+   ```
+3. Ensure your server loads this environment variable (e.g., via `dotenv`).
 
 ## Installation
 ```bash
@@ -48,7 +59,7 @@ Run the helper script to launch Anki, start servers, and open your browser:
 # Start static server on port 8000
 python3 -m http.server 8000
 
-# Start the Puppeteer proxy server on port 3001
+# Start the Puppeteer proxy and tutor-analysis server on port 3001
 arch -arm64 node js/server.js
 
 # Open the app in your browser
@@ -61,7 +72,7 @@ open http://localhost:8000
 ├── css/                   # Stylesheets for the UI
 ├── data/                  # TEI XML sources (Greek text and translation)
 ├── js/                    # JavaScript modules (front-end and proxy server)
-│   ├── server.js          # Puppeteer proxy service (Express)
+│   ├── server.js          # Puppeteer proxy and AI tutor-analysis service (Express)
 │   ├── ui.js              # UI rendering logic
 │   ├── bookLoader.js      # Iliad XML loader
 │   ├── translationLoader.js# Translation XML loader
