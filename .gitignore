@@ -1,7 +1,6 @@
 node_modules/
 .DS_Store
 *.log
-js/server.js # if you don’t want to commit local server credentials
 *.env
 todo.txt
 start.sh

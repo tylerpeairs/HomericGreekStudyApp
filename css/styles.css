@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 /*!
  * styles.css
  * Modern stylesheet for HomericGreekStudyApp
@@ -26,13 +27,13 @@
   --neutral-800: #1e293b;
   --neutral-900: #0f172a;
   
-  --border-radius: 8px;
-  --border-radius-lg: 12px;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --border-radius: 4px;
+  --border-radius-lg: 8px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
   
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
   --font-greek: 'Times New Roman', 'Palatino Linotype', serif;
 }
@@ -45,15 +46,11 @@
    Layout
 ------------------------------------------------------------------------- */
 body {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--neutral-800);
-  background-color: var(--neutral-50);
-  margin: 0;
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 24px;
-  display: flex;
-  gap: 24px;
+  font-family: var(--font-sans);
+  background-color: var(--neutral-50);
 }
 
 #mainContainer {
@@ -61,6 +58,9 @@ body {
   min-width: 0;
 }
 
+/* -------------------------------------------------------------------------
+   Log Container
+------------------------------------------------------------------------- */
 #logContainer {
   flex: 0 0 45%;
   max-height: 85vh;
@@ -78,7 +78,8 @@ body {
    Typography
 ------------------------------------------------------------------------- */
 h1 {
-  font-size: 28px;
+  font-family: var(--font-sans);
+  font-size: 2rem;
   font-weight: 700;
   color: var(--neutral-900);
   margin: 0 0 24px 0;
@@ -86,7 +87,7 @@ h1 {
 }
 
 h2 {
-  font-size: 20px;
+  font-size: 1.5rem;
   font-weight: 600;
   color: var(--neutral-800);
   margin: 0 0 16px 0;
@@ -97,8 +98,8 @@ h2 {
 }
 
 h3 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1.125rem;
+  font-weight: 500;
   color: var(--neutral-700);
   margin: 16px 0 8px 0;
 }
@@ -136,7 +137,7 @@ input, select, textarea {
 input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 input:hover, select:hover, textarea:hover {
@@ -239,13 +240,13 @@ th {
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  padding: 12px 16px;
+  padding: 8px 12px;
   text-align: left;
   border-bottom: 1px solid var(--neutral-200);
 }
 
 td {
-  padding: 12px 16px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--neutral-100);
   vertical-align: top;
 }
@@ -279,18 +280,15 @@ td[contenteditable="true"]:hover {
    Line Blocks
 ------------------------------------------------------------------------- */
 .line-block {
-  background: white;
-  border: 1px solid var(--neutral-200);
+  padding: 20px;
   border-radius: var(--border-radius-lg);
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .line-block:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--neutral-300);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .line-header {
@@ -398,16 +396,21 @@ td[contenteditable="true"]:hover {
    Translation Log
 ------------------------------------------------------------------------- */
 #translationLog {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.5;
-  background: var(--neutral-50);
-  border: 1px solid var(--neutral-200);
-  border-radius: var(--border-radius);
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 30%;
+  height: 100vh;
   padding: 16px;
-  margin: 16px 0;
-  overflow-x: auto;
-  white-space: pre-wrap;
+  background: var(--neutral-50);
+  border-left: 1px solid var(--neutral-200);
+  overflow-y: auto;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+#mainContainer {
+  margin-right: 32%;
 }
 
 .translation-block {
