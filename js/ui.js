@@ -43,6 +43,7 @@ export function createLineBlock(lineNumber, text) {
         <th>Word (Translation)</th>
         <th>Form</th>
         <th>Add to Anki</th>
+        <th>Add Form to Anki</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -59,6 +60,7 @@ export function createLineBlock(lineNumber, text) {
       <td contenteditable="true"></td>
       <td contenteditable="true"></td>
       <td><input type="checkbox" class="add-to-anki-checkbox" /></td>
+      <td><input type="checkbox" class="add-to-anki-form-checkbox" /></td>
     `;
     tbody.appendChild(tr);
   });

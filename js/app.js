@@ -128,7 +128,27 @@ function initializeApp() {
     selected.forEach(item => {
       const n = item.getAttribute('data-n');
       const text = item.getAttribute('data-text');
-      createLineBlock(n, text);
+      // Create the line block (row)
+      const row = createLineBlock(n, text);
+      // Add the "Add Formless to Anki" column (checkbox)
+      if (row && row.querySelector) {
+        // Try to find the table row; if createLineBlock returns the tr, append td; if not, try to find it
+        let tr = row;
+        // If row is not a tr, try to find tr inside row
+        if (!(tr instanceof HTMLTableRowElement)) {
+          tr = row.querySelector && row.querySelector('tr') ? row.querySelector('tr') : null;
+        }
+        if (tr) {
+          const td = document.createElement('td');
+          td.className = 'anki-form-col';
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'anki-form-checkbox';
+          checkbox.title = 'Add Form to Anki';
+          td.appendChild(checkbox);
+          tr.appendChild(td);
+        }
+      }
     });
   });
 

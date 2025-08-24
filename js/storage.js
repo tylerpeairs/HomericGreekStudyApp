@@ -5,7 +5,7 @@
  * Author: Tyler Peairs
  */
 // --- App timing and flashcard utilities ---
-import { addFlashcard } from './flashcard.js';
+import { addFlashcard, addFormFlashcard } from './flashcard.js';
 
 // Timing progress import
 import { startTime } from './app.js';
@@ -106,6 +106,10 @@ export function saveTranslations() {
       if (checkbox?.checked) {
 
         addFlashcard(originalLines, greek, translation, guess);
+      }
+      const formCheckbox = tr.querySelector('.add-to-anki-form-checkbox');
+      if (formCheckbox?.checked) {
+        addFormFlashcard(originalLines, greek, form, guess);
       }
       logText += `| ${greek} | ${translation} | ${form} |\n`;
     });

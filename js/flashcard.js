@@ -1,4 +1,4 @@
-/**
+/****
  * Test function: adds a note to the "Greek Autoadd" deck using invoke().
  * Front: two lines (originalLine and greekTD)
  * Back: two lines (transTD and formTD)
@@ -26,6 +26,31 @@ export function addFlashcard(originalLine, greekTD, transTD, formTD) {
     invoke("addNote", 6, { note })
         .then(result => console.log("Note added successfully:", result))
         .catch(error => console.error("Error adding note:", error));
+}
+
+export function addFormFlashcard(originalLine, greekTD, formGuess, transLine) {
+    const note = {
+        deckName: "Greek Forms",
+        modelName: "Basic",
+        fields: {
+            Front: `${greekTD}<br>${originalLine}`,
+            Back: `${formGuess}<br>${transLine}`
+        },
+        options: {
+            allowDuplicate: false,
+            duplicateScope: "deck",
+            duplicateScopeOptions: {
+                deckName: "Greek AutoAdd",
+                checkChildren: false,
+                checkAllModels: false
+            }
+        },
+        tags: ["auto-greek"]
+    };
+
+    invoke("addNote", 6, { note })
+        .then(result => console.log("Form note added successfully:", result))
+        .catch(error => console.error("Error adding form note:", error));
 }
 
 /**
