@@ -112,7 +112,8 @@ export function createLineBlock(lineNumber, text) {
           lineNumber,                         // target line number in the Iliad
           originalLine,                       // Greek text of the target line
           wordGuesses: words,                 // array of objects with { word, translationGuess, formGuess }
-          userTranslation: phraseGuess        // the user’s full-phrase translation guess
+          userTranslation: phraseGuess,        // the user’s full-phrase translation guess
+          actualTranslation: chunk.map(c => c.text).join(' ') // the actual translation text for the chunk 
         };
         try {
           console.log('Tutor Analysis Payload:', payload);

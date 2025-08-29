@@ -132,10 +132,29 @@ app.post('/api/tutor-analysis', async (req, res) => {
   try {
     const payload = req.body;
     console.log('Tutor-analysis payload:', payload);
-    const systemPrompt = 'You are a specialized Homeric Greek tutor: given the original Greek line, the user’s word- and phrase-level guesses, and their morphological analyses, pinpoint mistranslations, omissions, and syntactic issues, supply correct lemmas and grammatical notes, render a polished literal translation, and always offer one brief tip for improvement.';
+    const systemPrompt = [
+      'You are a specialized Homeric Greek tutor.',
+      'INPUT FIELDS:',
+      '- originalLine: the target Greek line.',
+      '- wordGuesses: array of { word, translationGuess, formGuess } supplied by the user.',
+      '- phraseGuessText: the user\'s full-phrase translation guess.',
+      '- referenceTranslations: Lattimore line for context. It should be heavily considered but not quoted or paraphrased.',
+      'TASK:',
+      '1) Verify each wordGuess: give correct lemma and precise morphology (case/number/gender for nominals; person/number/tense/voice/mood for verbs).',
+      '2) Identify mistranslations, omissions, or additions; explain briefly (1–2 lines each).',
+      '3) Analyze syntax (particles, enclitics, clause relations, notable word order).',
+      '4) Produce ONE polished literal English translation of originalLine.',
+      '5) Add ONE concise study tip tailored to this line.',
+      'OUTPUT FORMAT (ALL sections required in this exact order; if nothing to add, write "None."):',
+      'WORD-LEVEL CORRECTIONS:\n- …\nSYNTAX NOTES:\n- …\nLITERAL TRANSLATION:\n…\nIDIOMATIC NUANCES:\n- …\nSTUDY TIP:\n…',
+    ].join(' ');
+    console.log('Tutor model: llama-4-maverick-17b-128e-instruct-fp8');
     const userContent = JSON.stringify(payload, null, 2);
     const response = await lambdaClient.chat.completions.create({
-      model: 'llama-4-scout-17b-16e-instruct',
+      model: 'llama-4-maverick-17b-128e-instruct-fp8',
+      temperature: 0.2,
+      top_p: 0.9,
+      max_tokens: 1000,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent },
