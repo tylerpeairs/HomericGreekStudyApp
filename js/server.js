@@ -3,7 +3,7 @@
  * Express server providing:
  *  - /api/hits endpoint: fetches corpus hit counts from ARTFL PHILologic via Puppeteer
  *  - /api/lookup endpoint: scrapes morphological parses and short definitions from Logeion via Puppeteer
- *  - /api/tutor-analysis endpoint: provides Homeric Greek tutor analysis via Lambda Labs
+ *  - /api/tutor-analysis endpoint: provides Homeric Greek tutor analysis via OpenAI GPT-5
  * Author: Tyler Peairs
  */
 // --- External libraries ---
@@ -14,13 +14,12 @@ import dotenv from 'dotenv';
 import { OpenAI } from 'openai';
 dotenv.config();
 
-const LAMBDA_API_KEY = process.env.LAMBDA_API_KEY;
-if (!LAMBDA_API_KEY) {
-  throw new Error('Missing LAMBDA_API_KEY in environment');
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+if (!OPENAI_API_KEY) {
+  throw new Error('Missing OPENAI_API_KEY in environment');
 }
-const lambdaClient = new OpenAI({
-  apiKey: LAMBDA_API_KEY,
-  baseURL: 'https://api.lambda.ai/v1',
+const openaiClient = new OpenAI({
+  apiKey: OPENAI_API_KEY,
 });
 
 // Initialize Express app and enable CORS for all routes
@@ -126,32 +125,29 @@ app.get('/api/lookup', async (req, res) => {
 
 /**
  * POST /api/tutor-analysis
- * Receives translation payload and returns tutor analysis via Lambda Labs.
+ * Receives translation payload and returns tutor analysis via OpenAI GPT-5.
  */
 app.post('/api/tutor-analysis', async (req, res) => {
   try {
     const payload = req.body;
     console.log('Tutor-analysis payload:', payload);
     const systemPrompt = [
-      'You are a specialized Homeric Greek tutor.',
-      'INPUT FIELDS:',
-      '- originalLine: the target Greek line.',
-      '- wordGuesses: array of { word, translationGuess, formGuess } supplied by the user.',
-      '- phraseGuessText: the user\'s full-phrase translation guess.',
-      '- referenceTranslations: Lattimore line for context. It should be heavily considered but not quoted or paraphrased.',
-      'TASK:',
-      '1) Verify each wordGuess: give correct lemma and precise morphology (case/number/gender for nominals; person/number/tense/voice/mood for verbs).',
-      '2) Identify mistranslations, omissions, or additions; explain briefly (1–2 lines each).',
-      '3) Analyze syntax (particles, enclitics, clause relations, notable word order).',
-      '4) Produce ONE polished literal English translation of originalLine.',
-      '5) Add ONE concise study tip tailored to this line.',
-      'OUTPUT FORMAT (ALL sections required in this exact order; if nothing to add, write "None."):',
+      'You are a specialized Homeric Greek tutor providing detailed and precise pedagogical feedback.',
+      'Focus your analysis on the following aspects:',
+      '1) Morphology: verify lemmas, provide exact morphological parsing including irregular forms and exceptions.',
+      '2) Syntax: analyze particles, enclitics, word order, clause subordination, and sentence structure.',
+      '3) Semantic nuance: discuss subtle meanings and connotations.',
+      '4) Stylistic devices: identify epithets, formulaic expressions, metrical features, and other poetic devices.',
+      '5) Translation: contrast literal and idiomatic translations carefully.',
+      '6) Study advice: offer personalized, concise tips tailored to this line to aid learning and retention.',
+      'Ensure your output is thorough, precise, and pedagogically sound.',
+      'OUTPUT FORMAT (all sections required in this exact order; if nothing to add, write "None."):',
       'WORD-LEVEL CORRECTIONS:\n- …\nSYNTAX NOTES:\n- …\nLITERAL TRANSLATION:\n…\nIDIOMATIC NUANCES:\n- …\nSTUDY TIP:\n…',
     ].join(' ');
-    console.log('Tutor model: llama-4-maverick-17b-128e-instruct-fp8');
+    console.log('Tutor model: gpt-5');
     const userContent = JSON.stringify(payload, null, 2);
-    const response = await lambdaClient.chat.completions.create({
-      model: 'llama-4-maverick-17b-128e-instruct-fp8',
+    const response = await openaiClient.chat.completions.create({
+      model: 'gpt-5',
       temperature: 0.2,
       top_p: 0.9,
       max_tokens: 1000,
@@ -160,8 +156,8 @@ app.post('/api/tutor-analysis', async (req, res) => {
         { role: 'user', content: userContent },
       ],
     });
-    console.log('Lambda completion raw response:', response);
-    console.log('Lambda response choices:', response.choices);
+    console.log('OpenAI completion raw response:', response);
+    console.log('OpenAI response choices:', response.choices);
     const analysis = response.choices?.[0]?.message?.content || '';
     console.log('Extracted analysis:', analysis);
     res.json({ analysis });
