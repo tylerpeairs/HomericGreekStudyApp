@@ -132,32 +132,22 @@ app.post('/api/tutor-analysis', async (req, res) => {
     const payload = req.body;
     console.log('Tutor-analysis payload:', payload);
     const systemPrompt = [
-      'You are a specialized Homeric Greek tutor providing detailed and precise pedagogical feedback.',
-      'Focus your analysis on the following aspects:',
-      '1) Morphology: verify lemmas, provide exact morphological parsing including irregular forms and exceptions.',
-      '2) Syntax: analyze particles, enclitics, word order, clause subordination, and sentence structure.',
-      '3) Semantic nuance: discuss subtle meanings and connotations.',
-      '4) Stylistic devices: identify epithets, formulaic expressions, metrical features, and other poetic devices.',
-      '5) Translation: contrast literal and idiomatic translations carefully.',
-      '6) Study advice: offer personalized, concise tips tailored to this line to aid learning and retention.',
-      'Ensure your output is thorough, precise, and pedagogically sound.',
-      'OUTPUT FORMAT (all sections required in this exact order; if nothing to add, write "None."):',
-      'WORD-LEVEL CORRECTIONS:\n- …\nSYNTAX NOTES:\n- …\nLITERAL TRANSLATION:\n…\nIDIOMATIC NUANCES:\n- …\nSTUDY TIP:\n…',
+      'You are a Homeric Greek tutor.',
+      'Provide corrections to morphology, note syntax briefly, give a literal translation, one idiomatic note if needed, and one short study tip.',
+      'OUTPUT FORMAT (all sections required in this exact order):',
+      'WORD CORRECTIONS:\n- …\nSYNTAX:\n- …\nTRANSLATION:\n…\nSTUDY TIP:\n…',
     ].join(' ');
-    console.log('Tutor model: gpt-5');
     const userContent = JSON.stringify(payload, null, 2);
+
+    console.log('Sending OpenAI request with model: gpt-5-mini');
     const response = await openaiClient.chat.completions.create({
-      model: 'gpt-5',
-      temperature: 0.2,
-      top_p: 0.9,
-      max_tokens: 1000,
+      model: 'gpt-5-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent },
       ],
     });
-    console.log('OpenAI completion raw response:', response);
-    console.log('OpenAI response choices:', response.choices);
+    console.log('OpenAI response received.');
     const analysis = response.choices?.[0]?.message?.content || '';
     console.log('Extracted analysis:', analysis);
     res.json({ analysis });
