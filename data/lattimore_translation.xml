@@ -7987,16 +7987,23 @@
                     <text text="and carry water from the spring Messeis or Hypereia," />
                     <milestone unit="line" n="458" />
                     <text text="all unwilling, but strong will be the necessity upon you;" />
-                    <milestone unit="line" n="459" />
-                    <text text="and some day seeing you shedding tears a man will say of you:" />
-                    <milestone unit="line" n="460" />
-                    <text text="&quot;This is the wife of Hektor, who was ever the bravest fighter" />
-                    <milestone unit="line" n="461" />
-                    <text text="of the Trojans, breakers of horses, in the days when they fought about Ilion.&quot; " />
-                    <milestone unit="line" n="462" />
-                    <text text="So will one speak of you; and for you it will be yet a fresh grief," />
-                    <milestone unit="line" n="463" />
-                    <text text="to be widowed of such a man who could fight off the day of your slavery." />
+<milestone unit="line" n="459" />
+<text text="and some day seeing you shedding tears a man will say of you:" />
+
+<milestone unit="line" n="460" />
+<text
+    text="This is the wife of Hektor, who was ever the bravest fighter" />
+
+<milestone unit="line" n="461" />
+<text
+    text="of the Trojans, breakers of horses, in the days when they fought about Ilion." />
+
+<milestone unit="line" n="462" />
+<text text="So will one speak of you; and for you it will be yet a fresh grief," />
+
+<milestone unit="line" n="463" />
+<text
+    text="to be widowed of such a man who could fight off the day of your slavery." />
                     <milestone unit="line" n="464" />
                     <text text="But may I be dead and the piled earth hide me under before I" />
                     <milestone unit="line" n="465" />
@@ -8327,565 +8334,570 @@
                     <milestone unit="line" n="88" />
                     <text text="one who in his benched ship sails on the wine-blue water:" />
                     <milestone unit="line" n="89" />
-                    <text
-                        text="&quot;This is the mound of a man who died long ago in battle, who was one of the bravest, and glorious Hektor killed him.&quot;" />
+                    <text text="&quot;This is the mound of a man who died long ago in battle," />
                     <milestone unit="line" n="90" />
-                    <text text="So will he speak some day, and my glory will not be forgotten.'" />
+                    <text text="who was one of the bravest, and glorious Hektor killed him.&quot;" />
                     <milestone unit="line" n="91" />
-                    <text text="So he spoke, and all of them stayed stricken to silence" />
+                    <text text="So will he speak some day, and my glory will not be forgotten.'" />
                     <milestone unit="line" n="92" />
-                    <text text="in shame of refusing him, and in fear to take up his challenge." />
+                    <text text="So he spoke, and all of them stayed stricken to silence" />
                     <milestone unit="line" n="93" />
-                    <text text="But now at long last Menelaos stood forth and addressed them" />
+                    <text text="in shame of refusing him, and in fear to take up his challenge." />
                     <milestone unit="line" n="94" />
+                    <text text="But now at long last Menelaos stood forth and addressed them" />
+                    <milestone unit="line" n="95" />
                     <text
                         text="in scorn and reproach, and stirred within the heart to great sorrow:" />
-                    <milestone unit="line" n="95" />
-                    <text text="'Ah me! You brave in words, you women, not men, of Achaia!" />
                     <milestone unit="line" n="96" />
-                    <text text="This will be a defilement upon us, shame upon shame piled," />
+                    <text text="'Ah me! You brave in words, you women, not men, of Achaia!" />
                     <milestone unit="line" n="97" />
-                    <text text="if no one of the Danaans goes out to face Hektor." />
+                    <text text="This will be a defilement upon us, shame upon shame piled," />
                     <milestone unit="line" n="98" />
-                    <text text="No, may all of you turn to water and earth, all of you" />
+                    <text text="if no one of the Danaans goes out to face Hektor." />
                     <milestone unit="line" n="99" />
-                    <text text="who sit by yourselves with no life in you, utterly dishonoured." />
+                    <text text="No, may all of you turn to water and earth, all of you" />
                     <milestone unit="line" n="100" />
-                    <text text="I myself will arm against this man. While above us" />
+                    <text text="who sit by yourselves with no life in you, utterly dishonoured." />
                     <milestone unit="line" n="101" />
-                    <text text="the threads of victory are held in the hands of the immortals.'" />
+                    <text text="I myself will arm against this man. While above us" />
                     <milestone unit="line" n="102" />
-                    <text text="So he spoke, and began to put on his splendid armour." />
+                    <text text="the threads of victory are held in the hands of the immortals.'" />
                     <milestone unit="line" n="103" />
-                    <text text="And there, o Menelaos, would have shown forth the end of your life" />
+                    <text text="So he spoke, and began to put on his splendid armour." />
                     <milestone unit="line" n="104" />
-                    <text text="under the hands of Hektor, since he was far stronger than you were," />
+                    <text text="And there, o Menelaos, would have shown forth the end of your life" />
                     <milestone unit="line" n="105" />
-                    <text text="had not the kings of the Achaians leapt up and caught you;" />
+                    <text text="under the hands of Hektor, since he was far stronger than you were," />
                     <milestone unit="line" n="106" />
-                    <text text="and the son of Atreus himself, powerful Agamemnon," />
+                    <text text="had not the kings of the Achaians leapt up and caught you;" />
                     <milestone unit="line" n="107" />
+                    <text text="and the son of Atreus himself, powerful Agamemnon," />
+                    <milestone unit="line" n="108" />
                     <text
                         text="caught you by the right hand, and called you by name, and spoke to you:" />
-                    <milestone unit="line" n="108" />
-                    <text text="'Menelaos, beloved of God, you are mad; you have no need" />
                     <milestone unit="line" n="109" />
-                    <text text="to take leave of your senses thus. Hold fast, though it hurts you," />
+                    <text text="'Menelaos, beloved of God, you are mad; you have no need" />
                     <milestone unit="line" n="110" />
+                    <text text="to take leave of your senses thus. Hold fast, though it hurts you," />
+                    <milestone unit="line" n="111" />
                     <text
                         text="nor long in your pride to fight with a man who is better than you are," />
-                    <milestone unit="line" n="111" />
-                    <text text="with Hektor, Priam's son. There are others who shudder before him." />
                     <milestone unit="line" n="112" />
-                    <text text="Even Achilleus, in the fighting where men win glory," />
+                    <text text="with Hektor, Priam's son. There are others who shudder before him." />
                     <milestone unit="line" n="113" />
-                    <text text="trembles to meet this man, and he is far better than you are." />
+                    <text text="Even Achilleus, in the fighting where men win glory," />
                     <milestone unit="line" n="114" />
-                    <text text="Go back now and sit down in the throng of your own companions;" />
+                    <text text="trembles to meet this man, and he is far better than you are." />
                     <milestone unit="line" n="115" />
-                    <text text="the Achaians will set up another to fight against this man," />
+                    <text text="Go back now and sit down in the throng of your own companions;" />
                     <milestone unit="line" n="116" />
-                    <text text="and even though he is without fear, and can never be glutted" />
+                    <text text="the Achaians will set up another to fight against this man," />
                     <milestone unit="line" n="117" />
-                    <text text="with rough work, I think he will be glad to leave off, even" />
+                    <text text="and even though he is without fear, and can never be glutted" />
                     <milestone unit="line" n="118" />
-                    <text text="if he comes off whole from the hateful fighting and bitter combat.'" />
+                    <text text="with rough work, I think he will be glad to leave off, even" />
                     <milestone unit="line" n="119" />
-                    <text text="The hero spoke like this and bent the heart of his brother" />
+                    <text text="if he comes off whole from the hateful fighting and bitter combat.'" />
                     <milestone unit="line" n="120" />
-                    <text text="since he urged wisely. And Menelaos obeyed him; his henchmen" />
+                    <text text="The hero spoke like this and bent the heart of his brother" />
                     <milestone unit="line" n="121" />
-                    <text text="joyfully thereupon took off the armour from his shoulders." />
+                    <text text="since he urged wisely. And Menelaos obeyed him; his henchmen" />
                     <milestone unit="line" n="122" />
-                    <text text="Nestor among the Argives now stood forth and addressed them:" />
+                    <text text="joyfully thereupon took off the armour from his shoulders." />
                     <milestone unit="line" n="123" />
-                    <text text="'Oh, for shame. Great sorrow settles on the land of Achaia." />
+                    <text text="Nestor among the Argives now stood forth and addressed them:" />
                     <milestone unit="line" n="124" />
-                    <text text="Surely he would groan aloud, Peleus, the aged horseman," />
+                    <text text="'Oh, for shame. Great sorrow settles on the land of Achaia." />
                     <milestone unit="line" n="125" />
-                    <text text="the great man of counsel among the Myrmidons, and their speaker." />
+                    <text text="Surely he would groan aloud, Peleus, the aged horseman," />
                     <milestone unit="line" n="126" />
+                    <text text="the great man of counsel among the Myrmidons, and their speaker." />
+                    <milestone unit="line" n="127" />
                     <text
                         text="Once, as he questioned me in his house, he was filled with great joy" />
-                    <milestone unit="line" n="127" />
-                    <text text="as he heard the generation and blood of all of the Argives." />
                     <milestone unit="line" n="128" />
-                    <text text="Now if he were to hear how all cringe away before Hektor," />
+                    <text text="as he heard the generation and blood of all of the Argives." />
                     <milestone unit="line" n="129" />
-                    <text text="many a time he would lift up his very hands to the immortals," />
+                    <text text="Now if he were to hear how all cringe away before Hektor," />
                     <milestone unit="line" n="130" />
+                    <text text="many a time he would lift up his very hands to the immortals," />
+                    <milestone unit="line" n="131" />
                     <text
                         text="and the life breath from his limbs would go down into the house of Hades." />
-                    <milestone unit="line" n="131" />
-                    <text text="If only, o father Zeus, Athene, Apollo," />
                     <milestone unit="line" n="132" />
-                    <text text="I were in my youth as when the Pylians assembled" />
+                    <text text="If only, o father Zeus, Athene, Apollo," />
                     <milestone unit="line" n="133" />
-                    <text text="and the spear-fighting Arkadians battled by swirling Keladon," />
+                    <text text="I were in my youth as when the Pylians assembled" />
                     <milestone unit="line" n="134" />
-                    <text text="by the streams of Iardanos and before the ramparts of Pheia." />
+                    <text text="and the spear-fighting Arkadians battled by swirling Keladon," />
                     <milestone unit="line" n="135" />
-                    <text text="Their champion stood forth, Ereuthalion, a man godlike," />
+                    <text text="by the streams of Iardanos and before the ramparts of Pheia." />
                     <milestone unit="line" n="136" />
-                    <text text="wearing upon his shoulders the armour of lord Areïthoös," />
+                    <text text="Their champion stood forth, Ereuthalion, a man godlike," />
                     <milestone unit="line" n="137" />
-                    <text text="Areïthoös the brilliant, given by the men of that time" />
+                    <text text="wearing upon his shoulders the armour of lord Areïthoös," />
                     <milestone unit="line" n="138" />
-                    <text text="and the fair-girdled women the name club-fighter, because he" />
+                    <text text="Areïthoös the brilliant, given by the men of that time" />
                     <milestone unit="line" n="139" />
-                    <text text="went into battle armed neither with the bow nor the long spear," />
+                    <text text="and the fair-girdled women the name club-fighter, because he" />
                     <milestone unit="line" n="140" />
-                    <text text="but with a great bar clubbed of iron broke the battalions." />
+                    <text text="went into battle armed neither with the bow nor the long spear," />
                     <milestone unit="line" n="141" />
-                    <text text="Lykourgos killed this man by craft, not strength, for he met him" />
+                    <text text="but with a great bar clubbed of iron broke the battalions." />
                     <milestone unit="line" n="142" />
+                    <text text="Lykourgos killed this man by craft, not strength, for he met him" />
+                    <milestone unit="line" n="143" />
                     <text
                         text="in the narrow pass of the way, where the iron club served not to parry" />
-                    <milestone unit="line" n="143" />
-                    <text text="destruction, for Lykourgos, too quick with a stab beneath it," />
                     <milestone unit="line" n="144" />
+                    <text text="destruction, for Lykourgos, too quick with a stab beneath it," />
+                    <milestone unit="line" n="145" />
                     <text
                         text="pinned him through the middle with the spear, so he went down backward" />
-                    <milestone unit="line" n="145" />
-                    <text text="to the ground; and he stripped the armour brazen Ares had given him" />
                     <milestone unit="line" n="146" />
-                    <text text="and wore the armour thereafter himself through the grind of battle." />
+                    <text text="to the ground; and he stripped the armour brazen Ares had given him" />
                     <milestone unit="line" n="147" />
-                    <text text="But when Lykourgos was grown an old man in his halls, he gave it" />
+                    <text text="and wore the armour thereafter himself through the grind of battle." />
                     <milestone unit="line" n="148" />
-                    <text text="to his beloved henchman, Ereuthalion, to carry." />
+                    <text text="But when Lykourgos was grown an old man in his halls, he gave it" />
                     <milestone unit="line" n="149" />
-                    <text text="Wearing this armour he called forth all the bravest to fight him," />
+                    <text text="to his beloved henchman, Ereuthalion, to carry." />
                     <milestone unit="line" n="150" />
-                    <text text="but they were all afraid and trembling: none had the courage," />
+                    <text text="Wearing this armour he called forth all the bravest to fight him," />
                     <milestone unit="line" n="151" />
-                    <text text="only I, for my hard-enduring heart in its daring" />
+                    <text text="but they were all afraid and trembling: none had the courage," />
                     <milestone unit="line" n="152" />
-                    <text text="drove me to fight him. I in age was the youngest of all of them." />
+                    <text text="only I, for my hard-enduring heart in its daring" />
                     <milestone unit="line" n="153" />
-                    <text text="And I fought with him, and Pallas Athene gave me the glory." />
+                    <text text="drove me to fight him. I in age was the youngest of all of them." />
                     <milestone unit="line" n="154" />
-                    <text text="Of all the men I have killed this was the tallest and strongest." />
+                    <text text="And I fought with him, and Pallas Athene gave me the glory." />
                     <milestone unit="line" n="155" />
-                    <text text="For he sprawled in his great bulk this way and that way. If only" />
+                    <text text="Of all the men I have killed this was the tallest and strongest." />
                     <milestone unit="line" n="156" />
-                    <text text="I were young now, as then, and the strength still steady within me;" />
+                    <text text="For he sprawled in his great bulk this way and that way. If only" />
                     <milestone unit="line" n="157" />
-                    <text text="Hektor of the glancing helm would soon find his battle." />
+                    <text text="I were young now, as then, and the strength still steady within me;" />
                     <milestone unit="line" n="158" />
-                    <text text="But you, now, who are the bravest of all the Achaians," />
+                    <text text="Hektor of the glancing helm would soon find his battle." />
                     <milestone unit="line" n="159" />
-                    <text text="are not minded with a good will to go against Hektor.'" />
+                    <text text="But you, now, who are the bravest of all the Achaians," />
                     <milestone unit="line" n="160" />
-                    <text text="So the old man scolded them, and nine in all stood forth." />
+                    <text text="are not minded with a good will to go against Hektor.'" />
                     <milestone unit="line" n="161" />
-                    <text text="Far the first to rise up was the lord of men, Agamemnon," />
+                    <text text="So the old man scolded them, and nine in all stood forth." />
                     <milestone unit="line" n="162" />
-                    <text text="and rose after him the son of Tydeus, strong Diomedes," />
+                    <text text="Far the first to rise up was the lord of men, Agamemnon," />
                     <milestone unit="line" n="163" />
-                    <text text="and next the two Aiantes rose, their fierce strength upon them," />
+                    <text text="and rose after him the son of Tydeus, strong Diomedes," />
                     <milestone unit="line" n="164" />
-                    <text text="and after these Idomeneus, and Idomeneus' companion," />
+                    <text text="and next the two Aiantes rose, their fierce strength upon them," />
                     <milestone unit="line" n="165" />
-                    <text text="Meriones, a match for the murderous Lord of Battles," />
+                    <text text="and after these Idomeneus, and Idomeneus' companion," />
                     <milestone unit="line" n="166" />
-                    <text text="and after these Eurypylos, the glorious son of Euaimon," />
+                    <text text="Meriones, a match for the murderous Lord of Battles," />
                     <milestone unit="line" n="167" />
-                    <text text="and Thoas rose up, Andraimon's son, and brilliant Odysseus." />
+                    <text text="and after these Eurypylos, the glorious son of Euaimon," />
                     <milestone unit="line" n="168" />
-                    <text text="All of these were willing to fight against brilliant Hektor." />
+                    <text text="and Thoas rose up, Andraimon's son, and brilliant Odysseus." />
                     <milestone unit="line" n="169" />
-                    <text text="Now before them again spoke the Gerenian horseman, Nestor:" />
+                    <text text="All of these were willing to fight against brilliant Hektor." />
                     <milestone unit="line" n="170" />
-                    <text text="'Let the lot be shaken for all of you, to see who wins it." />
+                    <text text="Now before them again spoke the Gerenian horseman, Nestor:" />
                     <milestone unit="line" n="171" />
-                    <text text="He shall be the one to gladden the strong-greaved Achaians," />
+                    <text text="'Let the lot be shaken for all of you, to see who wins it." />
                     <milestone unit="line" n="172" />
-                    <text text="and to be glad within his own heart, if he can come off" />
+                    <text text="He shall be the one to gladden the strong-greaved Achaians," />
                     <milestone unit="line" n="173" />
-                    <text text="whole again from the hateful battle and bitter combat.'" />
+                    <text text="and to be glad within his own heart, if he can come off" />
                     <milestone unit="line" n="174" />
-                    <text text="So he spoke, and each of them marked a lot as his own one lot." />
+                    <text text="whole again from the hateful battle and bitter combat.'" />
                     <milestone unit="line" n="175" />
-                    <text text="They threw them in the helmet of Atreus' son, Agamemnon." />
+                    <text text="So he spoke, and each of them marked a lot as his own one lot." />
                     <milestone unit="line" n="176" />
-                    <text text="and the people, holding up their hands to the gods, prayed to them." />
+                    <text text="They threw them in the helmet of Atreus' son, Agamemnon." />
                     <milestone unit="line" n="177" />
-                    <text text="Then would murmur any man, gazing into the wide sky:" />
+                    <text text="and the people, holding up their hands to the gods, prayed to them." />
                     <milestone unit="line" n="178" />
-                    <text text="'Father Zeus, let Aias win the lot, or else Diomedes," />
+                    <text text="Then would murmur any man, gazing into the wide sky:" />
                     <milestone unit="line" n="179" />
-                    <text text="Tydeus' son, or the king himself of golden Mykenai.'" />
+                    <text text="'Father Zeus, let Aias win the lot, or else Diomedes," />
                     <milestone unit="line" n="180" />
-                    <text text="So they spoke, and Nestor the Gerenian horseman shook the lots," />
+                    <text text="Tydeus' son, or the king himself of golden Mykenai.'" />
                     <milestone unit="line" n="181" />
-                    <text
-                        text="and a lot leapt from the helmet, that one that they all had wished for," />
+                    <text text="So they spoke, and Nestor the Gerenian horseman shook the lots," />
                     <milestone unit="line" n="182" />
                     <text
-                        text="the lot of Aias; and a herald carrying it all through the great throng" />
+                        text="and a lot leapt from the helmet, that one that they all had wished for," />
                     <milestone unit="line" n="183" />
-                    <text text="showed it from left to right to the great men of the Achaians," />
-                    <milestone unit="line" n="184" />
-                    <text text="all of them. Each man knew not the mark, and denied it," />
-                    <milestone unit="line" n="185" />
                     <text
-                        text="but as carrying it all through the great throng he showed it to that one" />
+                        text="the lot of Aias; and a herald carrying it all through the great throng" />
+                    <milestone unit="line" n="184" />
+                    <text text="showed it from left to right to the great men of the Achaians," />
+                    <milestone unit="line" n="185" />
+                    <text text="all of them. Each man knew not the mark, and denied it," />
                     <milestone unit="line" n="186" />
                     <text
-                        text="who had marked it as his, and thrown it in the helmet, glorious Aias," />
+                        text="but as carrying it all through the great throng he showed it to that one" />
                     <milestone unit="line" n="187" />
                     <text
-                        text="he held forth his hand, and the herald stood by him, and put the lot in it," />
+                        text="who had marked it as his, and thrown it in the helmet, glorious Aias," />
                     <milestone unit="line" n="188" />
                     <text
-                        text="and he saw his mark on the lot, and knew it, and his heart was gladdened." />
+                        text="he held forth his hand, and the herald stood by him, and put the lot in it," />
                     <milestone unit="line" n="189" />
-                    <text text="He threw it down on the ground beside his foot, and spoke to them:" />
+                    <text
+                        text="and he saw his mark on the lot, and knew it, and his heart was gladdened." />
                     <milestone unit="line" n="190" />
-                    <text text="'See, friends, the lot is mine, and I myself am made happy" />
+                    <text text="He threw it down on the ground beside his foot, and spoke to them:" />
                     <milestone unit="line" n="191" />
-                    <text text="in my heart, since I think I can win over brilliant Hektor." />
+                    <text text="'See, friends, the lot is mine, and I myself am made happy" />
                     <milestone unit="line" n="192" />
-                    <text text="Do this, then: while I put on my armour of fighting," />
+                    <text text="in my heart, since I think I can win over brilliant Hektor." />
                     <milestone unit="line" n="193" />
-                    <text text="all of you be praying to the lord Zeus, the son of Kronos," />
+                    <text text="Do this, then: while I put on my armour of fighting," />
                     <milestone unit="line" n="194" />
-                    <text text="in silence and each to himself, let none of the Trojans hear you;" />
+                    <text text="all of you be praying to the lord Zeus, the son of Kronos," />
                     <milestone unit="line" n="195" />
-                    <text text="or openly out loud, since we have nothing to be afraid of" />
+                    <text text="in silence and each to himself, let none of the Trojans hear you;" />
                     <milestone unit="line" n="196" />
-                    <text text="at all, since no man by force will beat me backward unwilling" />
+                    <text text="or openly out loud, since we have nothing to be afraid of" />
                     <milestone unit="line" n="197" />
+                    <text text="at all, since no man by force will beat me backward unwilling" />
+                    <milestone unit="line" n="198" />
                     <text
                         text="as he wills, nor by craft either, since I think that the man who was born" />
-                    <milestone unit="line" n="198" />
-                    <text text="and raised in Salamis, myself, is not such a novice.'" />
                     <milestone unit="line" n="199" />
-                    <text text="So he spoke, and they prayed to the lord Zeus, the son of Kronos." />
+                    <text text="and raised in Salamis, myself, is not such a novice.'" />
                     <milestone unit="line" n="200" />
-                    <text text="And then would murmur any man, gazing into the wide sky:" />
+                    <text text="So he spoke, and they prayed to the lord Zeus, the son of Kronos." />
                     <milestone unit="line" n="201" />
-                    <text text="'Father Zeus, watching over us from Ida, most high, most honoured," />
+                    <text text="And then would murmur any man, gazing into the wide sky:" />
                     <milestone unit="line" n="202" />
-                    <text text="grant that Aias win the vaunt of renown and the victory;" />
+                    <text text="'Father Zeus, watching over us from Ida, most high, most honoured," />
                     <milestone unit="line" n="203" />
-                    <text text="but if truly you love Hektor and are careful for him," />
+                    <text text="grant that Aias win the vaunt of renown and the victory;" />
                     <milestone unit="line" n="204" />
-                    <text text="give to both of them equal strength, make equal their honour.'" />
+                    <text text="but if truly you love Hektor and are careful for him," />
                     <milestone unit="line" n="205" />
-                    <text text="So they spoke, and meanwhile Aias armed him in shining" />
+                    <text text="give to both of them equal strength, make equal their honour.'" />
                     <milestone unit="line" n="206" />
-                    <text text="bronze. Then when he had girt his body in all its armour," />
+                    <text text="So they spoke, and meanwhile Aias armed him in shining" />
                     <milestone unit="line" n="207" />
-                    <text text="he strode on his way, as Ares the war god walks gigantic" />
+                    <text text="bronze. Then when he had girt his body in all its armour," />
                     <milestone unit="line" n="208" />
-                    <text text="going into the fighting of men whom the son of Kronos" />
+                    <text text="he strode on his way, as Ares the war god walks gigantic" />
                     <milestone unit="line" n="209" />
-                    <text text="has driven to fight angrily in heart-perishing hatred." />
+                    <text text="going into the fighting of men whom the son of Kronos" />
                     <milestone unit="line" n="210" />
-                    <text text="Such was Aias as he strode gigantic, the wall of the Achaians," />
+                    <text text="has driven to fight angrily in heart-perishing hatred." />
                     <milestone unit="line" n="211" />
-                    <text text="smiling under his threatening brows, with his feet beneath him" />
+                    <text text="Such was Aias as he strode gigantic, the wall of the Achaians," />
                     <milestone unit="line" n="212" />
-                    <text text="taking huge strides forward, and shaking the spear far-shadowing." />
+                    <text text="smiling under his threatening brows, with his feet beneath him" />
                     <milestone unit="line" n="213" />
-                    <text text="And the Argives looking upon him were made glad, while the Trojans" />
+                    <text text="taking huge strides forward, and shaking the spear far-shadowing." />
                     <milestone unit="line" n="214" />
-                    <text text="were taken every man in the knees with trembling and terror," />
+                    <text text="And the Argives looking upon him were made glad, while the Trojans" />
                     <milestone unit="line" n="215" />
+                    <text text="were taken every man in the knees with trembling and terror," />
+                    <milestone unit="line" n="216" />
                     <text
                         text="and for Hektor himself the heart beat hard in his breast, but he could not" />
-                    <milestone unit="line" n="216" />
-                    <text text="any more find means to take flight and shrink back into" />
                     <milestone unit="line" n="217" />
+                    <text text="any more find means to take flight and shrink back into" />
+                    <milestone unit="line" n="218" />
                     <text
                         text="the throng of his men, since he in his pride had called him to battle." />
-                    <milestone unit="line" n="218" />
-                    <text text="Now Aias came near him, carrying like a wall his shield" />
                     <milestone unit="line" n="219" />
+                    <text text="Now Aias came near him, carrying like a wall his shield" />
+                    <milestone unit="line" n="220" />
                     <text
                         text="of bronze and sevenfold ox-hide which Tychios wrought him with much toil;" />
-                    <milestone unit="line" n="220" />
-                    <text text="Tychios, at home in Hyle, far the best of all workers in leather" />
                     <milestone unit="line" n="221" />
-                    <text text="who had made him the great gleaming shield of sevenfold ox-hide" />
+                    <text text="Tychios, at home in Hyle, far the best of all workers in leather" />
                     <milestone unit="line" n="222" />
-                    <text text="from strong bulls, and hammered an eighth fold of bronze upon it." />
+                    <text text="who had made him the great gleaming shield of sevenfold ox-hide" />
                     <milestone unit="line" n="223" />
-                    <text text="Telamonian Aias, carrying this to cover" />
+                    <text text="from strong bulls, and hammered an eighth fold of bronze upon it." />
                     <milestone unit="line" n="224" />
-                    <text text="his chest, came near to Hektor and spoke to him in words of menace:" />
+                    <text text="Telamonian Aias, carrying this to cover" />
                     <milestone unit="line" n="225" />
-                    <text text="'Hektor, single man against single man you will learn now" />
+                    <text text="his chest, came near to Hektor and spoke to him in words of menace:" />
                     <milestone unit="line" n="226" />
-                    <text text="for sure what the bravest men are like among the Danaans" />
+                    <text text="'Hektor, single man against single man you will learn now" />
                     <milestone unit="line" n="227" />
-                    <text text="even after Achilleus the lion-hearted who breaks men in battle." />
+                    <text text="for sure what the bravest men are like among the Danaans" />
                     <milestone unit="line" n="228" />
-                    <text text="He lies now apart among his own beaked seafaring" />
+                    <text text="even after Achilleus the lion-hearted who breaks men in battle." />
                     <milestone unit="line" n="229" />
-                    <text text="ships, in anger at Agamemnon, the shepherd of the people." />
+                    <text text="He lies now apart among his own beaked seafaring" />
                     <milestone unit="line" n="230" />
-                    <text text="But here are we; and we are such men as can stand up against you;" />
+                    <text text="ships, in anger at Agamemnon, the shepherd of the people." />
                     <milestone unit="line" n="231" />
-                    <text text="there are plenty of us; so now begin your fight and your combat.'" />
+                    <text text="But here are we; and we are such men as can stand up against you;" />
                     <milestone unit="line" n="232" />
-                    <text text="Tall Hektor of the glancing helm answered him: 'Aias," />
+                    <text text="there are plenty of us; so now begin your fight and your combat.'" />
                     <milestone unit="line" n="233" />
-                    <text text="son of Telamon, seed of Zeus, o lord of the people," />
+                    <text text="Tall Hektor of the glancing helm answered him: 'Aias," />
                     <milestone unit="line" n="234" />
-                    <text text="do not be testing me as if I were some ineffectual" />
+                    <text text="son of Telamon, seed of Zeus, o lord of the people," />
                     <milestone unit="line" n="235" />
-                    <text text="boy, or a woman, who knows nothing of the works of warfare." />
+                    <text text="do not be testing me as if I were some ineffectual" />
                     <milestone unit="line" n="236" />
-                    <text text="I know well myself how to fight and kill men in battle;" />
+                    <text text="boy, or a woman, who knows nothing of the works of warfare." />
                     <milestone unit="line" n="237" />
+                    <text text="I know well myself how to fight and kill men in battle;" />
+                    <milestone unit="line" n="238" />
                     <text
                         text="I know how to turn to the right, how to turn to the left the ox-hide" />
-                    <milestone unit="line" n="238" />
-                    <text text="tanned into a shield which is my protection in battle;" />
                     <milestone unit="line" n="239" />
-                    <text text="I know how to storm my way into the struggle of flying horses;" />
+                    <text text="tanned into a shield which is my protection in battle;" />
                     <milestone unit="line" n="240" />
-                    <text text="I know how to tread my measures on the grim floor of the war god." />
+                    <text text="I know how to storm my way into the struggle of flying horses;" />
                     <milestone unit="line" n="241" />
-                    <text text="Yet great as you are I would not strike you by stealth, watching" />
+                    <text text="I know how to tread my measures on the grim floor of the war god." />
                     <milestone unit="line" n="242" />
-                    <text text="for my chance, but openly, so, if perhaps I might hit you.'" />
+                    <text text="Yet great as you are I would not strike you by stealth, watching" />
                     <milestone unit="line" n="243" />
-                    <text text="So he spoke, and balanced the spear far-shadowed, and threw it," />
+                    <text text="for my chance, but openly, so, if perhaps I might hit you.'" />
                     <milestone unit="line" n="244" />
-                    <text text="and struck the sevenfold-ox-hide terrible shield of Aias" />
+                    <text text="So he spoke, and balanced the spear far-shadowed, and threw it," />
                     <milestone unit="line" n="245" />
-                    <text text="in the uttermost bronze, which was the eighth layer upon it," />
+                    <text text="and struck the sevenfold-ox-hide terrible shield of Aias" />
                     <milestone unit="line" n="246" />
-                    <text text="and the unwearying bronze spearhead shore its way through six folds" />
+                    <text text="in the uttermost bronze, which was the eighth layer upon it," />
                     <milestone unit="line" n="247" />
-                    <text text="but was stopped in the seventh ox-hide. Then after him Aias" />
+                    <text text="and the unwearying bronze spearhead shore its way through six folds" />
                     <milestone unit="line" n="248" />
-                    <text text="the illustrious in turn cast with his spear far-shadowing" />
+                    <text text="but was stopped in the seventh ox-hide. Then after him Aias" />
                     <milestone unit="line" n="249" />
-                    <text text="and struck the shield of Priam's son on its perfect circle." />
+                    <text text="the illustrious in turn cast with his spear far-shadowing" />
                     <milestone unit="line" n="250" />
-                    <text text="All the way through the glittering shield went the heavy spearhead," />
+                    <text text="and struck the shield of Priam's son on its perfect circle." />
                     <milestone unit="line" n="251" />
-                    <text text="and crashed its way through the intricately worked corselet;" />
+                    <text text="All the way through the glittering shield went the heavy spearhead," />
                     <milestone unit="line" n="252" />
-                    <text text="straight ahead by the flank the spearhead shore through his tunic," />
+                    <text text="and crashed its way through the intricately worked corselet;" />
                     <milestone unit="line" n="253" />
-                    <text text="yet he bent away to one side and avoided the dark death." />
+                    <text text="straight ahead by the flank the spearhead shore through his tunic," />
                     <milestone unit="line" n="254" />
-                    <text text="Both now gripping in their hands the long spears pulled them" />
+                    <text text="yet he bent away to one side and avoided the dark death." />
                     <milestone unit="line" n="255" />
-                    <text text="out, and went at each other like lions who live on raw meat," />
+                    <text text="Both now gripping in their hands the long spears pulled them" />
                     <milestone unit="line" n="256" />
-                    <text text="or wild boars, whose strength is no light thing. The son of" />
+                    <text text="out, and went at each other like lions who live on raw meat," />
                     <milestone unit="line" n="257" />
-                    <text text="Priam stabbed then with his spear into the shield's centre," />
+                    <text text="or wild boars, whose strength is no light thing. The son of" />
                     <milestone unit="line" n="258" />
+                    <text text="Priam stabbed then with his spear into the shield's centre," />
+                    <milestone unit="line" n="259" />
                     <text
                         text="nor did the bronze point break its way through, but the spearhead bent back." />
-                    <milestone unit="line" n="259" />
-                    <text text="Now Aias plunging upon him thrust at the shield, and the spearhead" />
                     <milestone unit="line" n="260" />
-                    <text text="passed clean through, and pounded Hektor back in his fury," />
+                    <text text="Now Aias plunging upon him thrust at the shield, and the spearhead" />
                     <milestone unit="line" n="261" />
-                    <text text="and tore at his neck passing so that the dark blood broke. Yet" />
+                    <text text="passed clean through, and pounded Hektor back in his fury," />
                     <milestone unit="line" n="262" />
-                    <text text="even so Hektor of the shining helmet did not stop fighting," />
+                    <text text="and tore at his neck passing so that the dark blood broke. Yet" />
                     <milestone unit="line" n="263" />
-                    <text text="but gave back and in his heavy hand caught up a stone that" />
+                    <text text="even so Hektor of the shining helmet did not stop fighting," />
                     <milestone unit="line" n="264" />
-                    <text text="lay in the plain, black and rugged and huge. With this" />
+                    <text text="but gave back and in his heavy hand caught up a stone that" />
                     <milestone unit="line" n="265" />
-                    <text text="he struck the sevenfold-ox-hide terrible shield of Aias" />
+                    <text text="lay in the plain, black and rugged and huge. With this" />
                     <milestone unit="line" n="266" />
-                    <text text="in the knob of the centre so that the bronze clashed loud about it." />
+                    <text text="he struck the sevenfold-ox-hide terrible shield of Aias" />
                     <milestone unit="line" n="267" />
-                    <text text="After him Aias in turn lifting a stone far greater" />
+                    <text text="in the knob of the centre so that the bronze clashed loud about it." />
                     <milestone unit="line" n="268" />
-                    <text
-                        text="whirled it and threw, leaning into the cast his strength beyond measure," />
+                    <text text="After him Aias in turn lifting a stone far greater" />
                     <milestone unit="line" n="269" />
                     <text
-                        text="and the shield broke inward under the stroke of the rock like a millstone," />
+                        text="whirled it and threw, leaning into the cast his strength beyond measure," />
                     <milestone unit="line" n="270" />
-                    <text text="and Hektor's very knees gave, so that he sprawled backward," />
+                    <text
+                        text="and the shield broke inward under the stroke of the rock like a millstone," />
                     <milestone unit="line" n="271" />
-                    <text text="shield beaten upon him, but at once Apollo lifted him upright." />
+                    <text text="and Hektor's very knees gave, so that he sprawled backward," />
                     <milestone unit="line" n="272" />
+                    <text text="shield beaten upon him, but at once Apollo lifted him upright." />
+                    <milestone unit="line" n="273" />
                     <text
                         text="And now they would have been stabbing with their swords at close quarters," />
-                    <milestone unit="line" n="273" />
-                    <text text="had not the heralds, messengers of Zeus and of mortals," />
                     <milestone unit="line" n="274" />
-                    <text text="come up, one for the bronze-armoured Achaians, one for the Trojans," />
+                    <text text="had not the heralds, messengers of Zeus and of mortals," />
                     <milestone unit="line" n="275" />
-                    <text text="Idaios and Talthybios, both men of good counsel." />
+                    <text text="come up, one for the bronze-armoured Achaians, one for the Trojans," />
                     <milestone unit="line" n="276" />
-                    <text text="They held their staves between the two men, and the herald Idaios" />
+                    <text text="Idaios and Talthybios, both men of good counsel." />
                     <milestone unit="line" n="277" />
-                    <text text="out of his knowledge of prudent advices spoke a word to them:" />
+                    <text text="They held their staves between the two men, and the herald Idaios" />
                     <milestone unit="line" n="278" />
-                    <text text="'Stop the fight, dear children, nor go on with this battle." />
+                    <text text="out of his knowledge of prudent advices spoke a word to them:" />
                     <milestone unit="line" n="279" />
-                    <text text="To Zeus who gathers the clouds both of you are beloved," />
+                    <text text="'Stop the fight, dear children, nor go on with this battle." />
                     <milestone unit="line" n="280" />
-                    <text text="and both of you are fighters; this thing all of us know surely." />
+                    <text text="To Zeus who gathers the clouds both of you are beloved," />
                     <milestone unit="line" n="281" />
+                    <text text="and both of you are fighters; this thing all of us know surely." />
+                    <milestone unit="line" n="282" />
                     <text
                         text="Night darkens now. It is a good thing to give way to the night-time.'" />
-                    <milestone unit="line" n="282" />
-                    <text text="Aias the son of Telamon spoke to him in answer:" />
                     <milestone unit="line" n="283" />
-                    <text text="'Bid Hektor answer this, Idaios, since it was he who" />
+                    <text text="Aias the son of Telamon spoke to him in answer:" />
                     <milestone unit="line" n="284" />
-                    <text text="in his pride called forth all our bravest to fight him." />
+                    <text text="'Bid Hektor answer this, Idaios, since it was he who" />
                     <milestone unit="line" n="285" />
-                    <text text="Let him speak first; and I for my part shall do as he urges.'" />
+                    <text text="in his pride called forth all our bravest to fight him." />
                     <milestone unit="line" n="286" />
-                    <text text="Tall Hektor of the glancing helm answered him: 'Aias," />
+                    <text text="Let him speak first; and I for my part shall do as he urges.'" />
                     <milestone unit="line" n="287" />
-                    <text text="seeing that God has given you strength, stature and wisdom" />
+                    <text text="Tall Hektor of the glancing helm answered him: 'Aias," />
                     <milestone unit="line" n="288" />
-                    <text text="also, and with the spear you surpass the other Achaians," />
+                    <text text="seeing that God has given you strength, stature and wisdom" />
                     <milestone unit="line" n="289" />
-                    <text text="let us now give over this fighting and hostility" />
+                    <text text="also, and with the spear you surpass the other Achaians," />
                     <milestone unit="line" n="290" />
-                    <text text="for today; we shall fight again, until the divinity" />
+                    <text text="let us now give over this fighting and hostility" />
                     <milestone unit="line" n="291" />
-                    <text text="chooses between us, and gives victory to one or the other." />
+                    <text text="for today; we shall fight again, until the divinity" />
                     <milestone unit="line" n="292" />
+                    <text text="chooses between us, and gives victory to one or the other." />
+                    <milestone unit="line" n="293" />
                     <text
                         text="Night darkens now. It is a good thing to give way to the night-time." />
-                    <milestone unit="line" n="293" />
-                    <text text="Thus you may bring joy to all the Achaians beside their" />
                     <milestone unit="line" n="294" />
-                    <text text="ships, and above all to those who are your own kindred and company;" />
+                    <text text="Thus you may bring joy to all the Achaians beside their" />
                     <milestone unit="line" n="295" />
-                    <text text="and I in the great city of lord Priam will gladden" />
+                    <text text="ships, and above all to those who are your own kindred and company;" />
                     <milestone unit="line" n="296" />
-                    <text text="the Trojans, and the women of Troy with their trailing robes, who" />
+                    <text text="and I in the great city of lord Priam will gladden" />
                     <milestone unit="line" n="297" />
-                    <text text="will go before the divine assembly in thanksgiving for my sake." />
+                    <text text="the Trojans, and the women of Troy with their trailing robes, who" />
                     <milestone unit="line" n="298" />
-                    <text text="Come then, let us give each other glorious presents," />
+                    <text text="will go before the divine assembly in thanksgiving for my sake." />
                     <milestone unit="line" n="299" />
-                    <text text="so that any of the Achaians or Trojans may say of us:" />
+                    <text text="Come then, let us give each other glorious presents," />
                     <milestone unit="line" n="300" />
-                    <text
-                        text="&quot;These two fought each other in heart-consuming hate, then joined with each other in close friendship, before they were parted.'&quot;" />
+                    <text text="so that any of the Achaians or Trojans may say of us:" />
                     <milestone unit="line" n="301" />
-                    <text text="So he spoke, and bringing a sword with nails of silver" />
+                    <text
+                        text="These two fought each other in heart-consuming hate," />
                     <milestone unit="line" n="302" />
                     <text
-                        text="gave it to him, together with the sheath and the well-cut sword belt," />
-                    <milestone unit="line" n="303" />
-                    <text text="and Aias gave a war belt coloured shining with purple." />
+                        text="then joined with each other in close friendship, before they were parted." />
+                   
+                        <milestone unit="line" n="303" />
+                    <text text="So he spoke, and bringing a sword with nails of silver" />
                     <milestone unit="line" n="304" />
-                    <text text="So separating, Aias went among the Achaian people," />
+                    <text
+                        text="gave it to him, together with the sheath and the well-cut sword belt," />
                     <milestone unit="line" n="305" />
-                    <text text="and Hektor went back to the thronging Trojans, who were made happy" />
+                    <text text="and Aias gave a war belt coloured shining with purple." />
                     <milestone unit="line" n="306" />
-                    <text text="when they saw him coming alive and unwounded out of the combat," />
+                    <text text="So separating, Aias went among the Achaian people," />
                     <milestone unit="line" n="307" />
-                    <text text="escaping the strength and the unconquerable hands of Aias," />
+                    <text text="and Hektor went back to the thronging Trojans, who were made happy" />
                     <milestone unit="line" n="308" />
-                    <text text="and they, who had not hoped to see him alive, escorted him" />
+                    <text text="when they saw him coming alive and unwounded out of the combat," />
                     <milestone unit="line" n="309" />
-                    <text text="back to the town. On the other side the strong-greaved Achaians" />
+                    <text text="escaping the strength and the unconquerable hands of Aias," />
                     <milestone unit="line" n="310" />
-                    <text text="led Aias, happy in his victory, to great Agamemnon." />
+                    <text text="and they, who had not hoped to see him alive, escorted him" />
                     <milestone unit="line" n="311" />
-                    <text text="When these had come to the shelters of the son of Atreus," />
+                    <text text="back to the town. On the other side the strong-greaved Achaians" />
                     <milestone unit="line" n="312" />
-                    <text text="Agamemnon the lord of men dedicated an ox among them," />
+                    <text text="led Aias, happy in his victory, to great Agamemnon." />
                     <milestone unit="line" n="313" />
-                    <text text="a five-year-old male, to Zeus, all-powerful son of Kronos." />
+                    <text text="When these had come to the shelters of the son of Atreus," />
                     <milestone unit="line" n="314" />
+                    <text text="Agamemnon the lord of men dedicated an ox among them," />
+                    <milestone unit="line" n="315" />
+                    <text text="a five-year-old male, to Zeus, all-powerful son of Kronos." />
+                    <milestone unit="line" n="316" />
                     <text
                         text="They skinned the victim and put it in order, and butchered the carcass," />
-                    <milestone unit="line" n="315" />
-                    <text text="and cut up the meat expertly into small pieces, and spitted them," />
-                    <milestone unit="line" n="316" />
-                    <text text="and roasted all carefully, and took off the pieces." />
                     <milestone unit="line" n="317" />
-                    <text text="Then after they had finished the work and got the feast ready," />
+                    <text text="and cut up the meat expertly into small pieces, and spitted them," />
                     <milestone unit="line" n="318" />
-                    <text text="they feasted, nor was any man's hunger denied a fair portion;" />
+                    <text text="and roasted all carefully, and took off the pieces." />
                     <milestone unit="line" n="319" />
-                    <text text="and Atreus' son, the hero wide-ruling Agamemnon," />
+                    <text text="Then after they had finished the work and got the feast ready," />
                     <milestone unit="line" n="320" />
-                    <text text="gave to Aias in honour the long cuts of the chine's portion." />
+                    <text text="they feasted, nor was any man's hunger denied a fair portion;" />
                     <milestone unit="line" n="321" />
-                    <text text="But when they had put away their desire for eating and drinking," />
+                    <text text="and Atreus' son, the hero wide-ruling Agamemnon," />
                     <milestone unit="line" n="322" />
-                    <text text="the aged man began to weave his counsel before them" />
+                    <text text="gave to Aias in honour the long cuts of the chine's portion." />
                     <milestone unit="line" n="323" />
-                    <text text="first, Nestor, whose advice had shown best before this." />
+                    <text text="But when they had put away their desire for eating and drinking," />
                     <milestone unit="line" n="324" />
-                    <text text="He in kind intention toward all stood forth and addressed them:" />
+                    <text text="the aged man began to weave his counsel before them" />
                     <milestone unit="line" n="325" />
-                    <text text="'Son of Atreus, and you other great men of all the Achaians:" />
+                    <text text="first, Nestor, whose advice had shown best before this." />
                     <milestone unit="line" n="326" />
-                    <text text="seeing that many flowing-haired Achaians have died here," />
+                    <text text="He in kind intention toward all stood forth and addressed them:" />
                     <milestone unit="line" n="327" />
+                    <text text="'Son of Atreus, and you other great men of all the Achaians:" />
+                    <milestone unit="line" n="328" />
+                    <text text="seeing that many flowing-haired Achaians have died here," />
+                    <milestone unit="line" n="329" />
                     <text
                         text="whose dark blood has been scattered beside the fair waters of Skamandros" />
-                    <milestone unit="line" n="328" />
+                    <milestone unit="line" n="330" />
                     <text
                         text="by the fierce war god, while their souls went down into the house of Hades;" />
-                    <milestone unit="line" n="329" />
-                    <text text="therefore with the dawn we should set a pause to the fighting" />
-                    <milestone unit="line" n="330" />
-                    <text text="of Achaians, and assembling them wheel back the bodies" />
                     <milestone unit="line" n="331" />
-                    <text text="with mules and oxen; then must we burn them a little apart from" />
+                    <text text="therefore with the dawn we should set a pause to the fighting" />
                     <milestone unit="line" n="332" />
-                    <text text="the ships, so that each whose duty it is may carry the bones back" />
+                    <text text="of Achaians, and assembling them wheel back the bodies" />
                     <milestone unit="line" n="333" />
-                    <text text="to a man's children, when we go home to the land of our fathers." />
+                    <text text="with mules and oxen; then must we burn them a little apart from" />
                     <milestone unit="line" n="334" />
-                    <text text="And let us gather and pile one single mound on the corpse-pyre" />
+                    <text text="the ships, so that each whose duty it is may carry the bones back" />
                     <milestone unit="line" n="335" />
-                    <text text="indiscriminately from the plain, and build fast upon it" />
+                    <text text="to a man's children, when we go home to the land of our fathers." />
                     <milestone unit="line" n="336" />
-                    <text text="towered ramparts, to be a defence of ourselves and our vessels." />
+                    <text text="And let us gather and pile one single mound on the corpse-pyre" />
                     <milestone unit="line" n="337" />
-                    <text text="And let us build into these walls gates strongly fitted" />
+                    <text text="indiscriminately from the plain, and build fast upon it" />
                     <milestone unit="line" n="338" />
-                    <text text="that there may be a way through them for the driving of horses;" />
+                    <text text="towered ramparts, to be a defence of ourselves and our vessels." />
                     <milestone unit="line" n="339" />
-                    <text text="and on the outer side, and close, we must dig a deep ditch" />
+                    <text text="And let us build into these walls gates strongly fitted" />
                     <milestone unit="line" n="340" />
-                    <text text="circling it, so as to keep off their people and horses," />
+                    <text text="that there may be a way through them for the driving of horses;" />
                     <milestone unit="line" n="341" />
+                    <text text="and on the outer side, and close, we must dig a deep ditch" />
+                    <milestone unit="line" n="342" />
+                    <text text="circling it, so as to keep off their people and horses," />
+                    <milestone unit="line" n="343" />
                     <text
                         text="that we may not be crushed under the attack of these proud Trojans.'" />
-                    <milestone unit="line" n="342" />
-                    <text text="So he spoke, and all the kings gave him their approval." />
-                    <milestone unit="line" n="343" />
-                    <text text="Now there was an assembly of Trojans high on the city of Ilion" />
                     <milestone unit="line" n="344" />
-                    <text text="fiercely shaken to tumult before the doors of Priam," />
+                    <text text="So he spoke, and all the kings gave him their approval." />
                     <milestone unit="line" n="345" />
-                    <text text="and among these Antenor the thoughtful began to address them:" />
+                    <text text="Now there was an assembly of Trojans high on the city of Ilion" />
                     <milestone unit="line" n="346" />
-                    <text text="'Trojans and Dardanians and companions in arms: hear me" />
+                    <text text="fiercely shaken to tumult before the doors of Priam," />
                     <milestone unit="line" n="347" />
-                    <text text="while I speak forth what the heart within my breast urges." />
+                    <text text="and among these Antenor the thoughtful began to address them:" />
                     <milestone unit="line" n="348" />
-                    <text text="Come then: let us give back Helen of Argos and all her possessions" />
+                    <text text="'Trojans and Dardanians and companions in arms: hear me" />
                     <milestone unit="line" n="349" />
-                    <text text="to the sons of Atreus to take away, seeing now we fight with" />
+                    <text text="while I speak forth what the heart within my breast urges." />
                     <milestone unit="line" n="350" />
-                    <text text="our true pledges made into lies; and I see no good thing's" />
+                    <text text="Come then: let us give back Helen of Argos and all her possessions" />
                     <milestone unit="line" n="351" />
-                    <text text="accomplishment for us in the end, unless we do this.'" />
+                    <text text="to the sons of Atreus to take away, seeing now we fight with”" />
                     <milestone unit="line" n="352" />
+                    <text text="our true pledges made into lies; and I see no good thing's" />
+                    <milestone unit="line" n="353" />
+                    <text text="accomplishment for us in the end, unless we do this" />
+                    <milestone unit="line" n="353" />
                     <text text="He spoke thus and sat down again, and among them rose up" />
-                    <milestone unit="line" n="352" />
+                    <milestone unit="line" n="354" />
                     <text text="brilliant Alexandros, the lord of lovely-haired Helen," />
                     <milestone unit="line" n="353" />
                     <text text="who spoke to him in answer and addressed them in winged words:" />
