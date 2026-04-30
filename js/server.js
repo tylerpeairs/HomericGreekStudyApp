@@ -139,16 +139,16 @@ app.post('/api/tutor-analysis', async (req, res) => {
     ].join(' ');
     const userContent = JSON.stringify(payload, null, 2);
 
-    console.log('Sending OpenAI request with model: gpt-5-mini');
-    const response = await openaiClient.chat.completions.create({
-      model: 'gpt-5-mini',
-      messages: [
+    console.log('Sending OpenAI Responses API request with model: gpt-5.5');
+    const response = await openaiClient.responses.create({
+      model: 'gpt-5.5',
+      input: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent },
       ],
     });
     console.log('OpenAI response received.');
-    const analysis = response.choices?.[0]?.message?.content || '';
+    const analysis = response.output_text || '';
     console.log('Extracted analysis:', analysis);
     res.json({ analysis });
   } catch (err) {
