@@ -87,10 +87,14 @@ app.get('/api/lookup', async (req, res) => {
 
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    await page.goto(url, {
+      waitUntil: 'domcontentloaded',
+      timeout: 60000,
+    });
+    await new Promise(resolve => setTimeout(resolve, 8000));
     console.log(`Page loaded: ${url}`);
 
-    await page.waitForSelector('ul.parse li');
+    await page.waitForSelector('ul.parse li', { timeout: 45000 });
     console.log('Found morphological parse selector.');
 
     const parses = await page.$$eval('ul.parse li', lis =>
