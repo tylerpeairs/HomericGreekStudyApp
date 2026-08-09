@@ -11,23 +11,31 @@ export let startTime;
 
 function initializeApp() {
   // --- Translation log controls ---
-  document.getElementById('saveBtn').addEventListener('click', () => {
-    // Save translations and get the highest saved line number
-    const lastLine = saveTranslations();
-    // Advance the selector window to the next batch of lines
-    const firstInput = document.getElementById('firstLineInput');
-    firstInput.value = lastLine + 1;
-    // Reload the selector to show the next window
-    document.getElementById('loadBookBtn').click();
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    try {
+      // Save translations and get the highest saved line number
+      const lastLine = await saveTranslations();
+      // Advance the selector window to the next batch of lines
+      const firstInput = document.getElementById('firstLineInput');
+      firstInput.value = lastLine + 1;
+      // Reload the selector to show the next window
+      document.getElementById('loadBookBtn').click();
+    } catch (err) {
+      alert(`Save failed, nothing was written: ${err.message}`);
+    }
   });
-  
+
     // Toggle translation log visibility
     const toggleBtn = document.getElementById('toggleLogBtn');
-    toggleBtn.addEventListener('click', () => {
+    toggleBtn.addEventListener('click', async () => {
       const logEl = document.getElementById('logContainer');
       if (logEl.style.display === 'none') {
         logEl.style.display = 'block';
-        loadTranslations();
+        try {
+          await loadTranslations();
+        } catch (err) {
+          alert(`Failed to load translation log: ${err.message}`);
+        }
         toggleBtn.textContent = '❌';
         toggleBtn.title = 'Hide Translation Log';
       } else {
@@ -36,7 +44,7 @@ function initializeApp() {
         toggleBtn.title = 'Show Translation Log';
       }
     });
-  
+
 
   // --- Iliad Book/Range Loader ---
   document.getElementById('loadBookBtn').addEventListener('click', async () => {

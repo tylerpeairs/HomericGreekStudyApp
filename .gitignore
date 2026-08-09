@@ -5,3 +5,4 @@ node_modules/
 todo.txt
 start.sh
 .env
+data/translationJournal.md

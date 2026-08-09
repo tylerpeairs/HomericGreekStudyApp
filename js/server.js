@@ -4,6 +4,7 @@
  *  - /api/hits endpoint: fetches corpus hit counts from ARTFL PHILologic via Puppeteer
  *  - /api/lookup endpoint: scrapes morphological parses and short definitions from Logeion via Puppeteer
  *  - /api/tutor-analysis endpoint: provides Homeric Greek tutor analysis via OpenAI GPT-5
+ *  - /api/translation-log endpoint: reads/appends the translation journal file on disk
  * Author: Tyler Peairs
  */
 // --- External libraries ---
@@ -12,7 +13,11 @@ import puppeteer from 'puppeteer';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { OpenAI } from 'openai';
+import fs from 'fs/promises';
+import path from 'path';
 dotenv.config();
+
+const TRANSLATION_LOG_PATH = path.resolve('data', 'translationJournal.md');
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 if (!OPENAI_API_KEY) {
@@ -25,7 +30,7 @@ const openaiClient = new OpenAI({
 // Initialize Express app and enable CORS for all routes
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '25mb' }));
 const PORT = process.env.PORT || 3001;
 console.log('Node is running as architecture:', process.arch);
 
@@ -45,7 +50,12 @@ app.get('/api/hits', async (req, res) => {
 
   try {
     console.log(`Fetching concordance hits for word: ${word}`);
-    const url = `https://artflsrv03.uchicago.edu/philologic4/Greek/query?report=concordance&method=phrase&q=${encodeURIComponent(word)}&start=0&end=0&author=&script=&frequency_field=&arg=&sort_order=rowid&title=%22Iliad%22`;
+    const url = `https://artflsrv03.uchicago.edu/philologic4/Greek/query`
+      + `?report=concordance`
+      + `&method=proxy`
+      + `&q=${encodeURIComponent('lemma:' + word)}`
+      + `&author=Homer`
+      + `&start=0&end=0`;
     console.log(`Visiting URL: ${url}`);
 
     const browser = await puppeteer.launch({ headless: true });
@@ -157,6 +167,43 @@ app.post('/api/tutor-analysis', async (req, res) => {
     res.json({ analysis });
   } catch (err) {
     console.error('Error in tutor-analysis:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/translation-log
+ * Returns the full contents of the translation journal file on disk.
+ * Response: JSON { text: string }
+ */
+app.get('/api/translation-log', async (req, res) => {
+  try {
+    const text = await fs.readFile(TRANSLATION_LOG_PATH, 'utf8').catch(err => {
+      if (err.code === 'ENOENT') return '';
+      throw err;
+    });
+    res.json({ text });
+  } catch (err) {
+    console.error('Error reading translation log:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/translation-log
+ * Appends the given text to the translation journal file on disk,
+ * creating the file (and its parent directory) if needed.
+ * Body: { text: string }
+ */
+app.post('/api/translation-log', async (req, res) => {
+  const { text } = req.body;
+  if (!text) return res.status(400).json({ error: 'Missing text' });
+  try {
+    await fs.mkdir(path.dirname(TRANSLATION_LOG_PATH), { recursive: true });
+    await fs.appendFile(TRANSLATION_LOG_PATH, text, 'utf8');
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error appending to translation log:', err);
     res.status(500).json({ error: err.message });
   }
 });

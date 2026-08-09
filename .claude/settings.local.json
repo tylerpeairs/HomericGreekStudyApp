@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo \"exit:$?\")",
+      "Bash(git log *)",
+      "mcp__claude-in-chrome__javascript_tool",
+      "Bash(sort -k6,7)",
+      "Bash(python3 - '/Users/tylerpeairs/Library/Application Support/Google/Chrome/Profile 2/Local Storage/leveldb')",
+      "Bash(python3 -c \"import snappy\")",
+      "Bash(python3 -c \"import cramjam\")",
+      "Bash(pip3 list *)",
+      "Bash(pip3 install *)",
+      "Bash(python3 -m pip show cramjam)",
+      "Bash(python3 -c \"import sys; print\\(sys.path\\)\")",
+      "Bash(/usr/local/opt/python@3.11/bin/python3.11 -c \"import cramjam; print\\('ok'\\)\")",
+      "Bash(/usr/local/opt/python@3.11/bin/python3.11 - '/Users/tylerpeairs/Library/Application Support/Google/Chrome/Profile 2/Local Storage/leveldb')"
+    ]
+  }
+}

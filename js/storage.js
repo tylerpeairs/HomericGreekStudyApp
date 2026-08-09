@@ -1,6 +1,7 @@
 /**
  * storage.js
- * Manages saving and loading user translation logs in localStorage,
+ * Manages saving and loading user translation logs in a server-side file
+ * (data/translationJournal.md, via the /api/translation-log endpoint),
  * and integrates with the flashcard module for Anki export.
  * Author: Tyler Peairs
  */
@@ -9,6 +10,46 @@ import { addFlashcard, addFormFlashcard } from './flashcard.js';
 
 // Timing progress import
 import { startTime } from './app.js';
+
+const LOG_ENDPOINT = 'http://localhost:3001/api/translation-log';
+
+// In-memory cache of the translation journal, mirrors the on-disk file.
+let logCache = null;
+
+/**
+ * Fetches the translation journal from the server, caching the result.
+ * @param {boolean} force - refetch even if a cached copy exists.
+ * @returns {Promise<string>}
+ */
+async function fetchLog(force = false) {
+  if (logCache !== null && !force) return logCache;
+  const res = await fetch(LOG_ENDPOINT);
+  if (!res.ok) {
+    throw new Error(`Failed to load translation log (HTTP ${res.status})`);
+  }
+  const { text } = await res.json();
+  logCache = text || '';
+  return logCache;
+}
+
+/**
+ * Appends text to the translation journal on the server and updates the cache.
+ * Throws if the server did not confirm the write, so callers never treat a
+ * failed save as successful.
+ * @param {string} text
+ */
+async function appendLog(text) {
+  const res = await fetch(LOG_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Failed to save translation log (HTTP ${res.status}): ${body}`);
+  }
+  logCache = (logCache || '') + text;
+}
 
 /**
  * Restores book, firstLine, and lastLine inputs from localStorage
@@ -26,16 +67,16 @@ export function restoreLineSelector() {
 
 
 /**
- * Retrieves the last saved “Original Line” entry from localStorage logs.
+ * Retrieves the last saved “Original Line” entry from the translation journal.
+ * @param {string} raw - the current journal text.
  * @returns {string|null} The last original line text or null if none.
  */
-function getLastOriginalLine() {
-  const raw = localStorage.getItem('translationLines') || '';
+function getLastOriginalLine(raw) {
   const blocks = raw
     .split('===START_BLOCK===')
     .slice(1)
     .map(chunk => chunk.split('===END_BLOCK===')[0].trim());
-  
+
   if (blocks.length < 1) return null;
 
   const lastBlock = blocks[blocks.length - 1];
@@ -45,9 +86,9 @@ function getLastOriginalLine() {
 
 /**
  * Gathers translation data from each .line-block, computes timing,
- * and appends formatted markdown blocks to localStorage.
+ * and appends formatted markdown blocks to the server-side translation journal.
  */
-export function saveTranslations() {
+export async function saveTranslations() {
 
   let lastLineNumber = 0;
   // 1) Capture the save timestamp
@@ -67,7 +108,7 @@ export function saveTranslations() {
 
   // 6) Build markdown log text for each block
   let logText = '';
-  let lastOriginalLine = getLastOriginalLine();
+  let lastOriginalLine = getLastOriginalLine(await fetchLog());
   let originalLines = '';
 
   blocks.forEach(block => {
@@ -81,6 +122,11 @@ export function saveTranslations() {
     
     logText += '===START_BLOCK===\n';
     // metadata
+    logText += `Date: ${new Date(saveTime).toISOString()}\n`;
+    const bookNum = document.getElementById('bookSelector')?.value;
+    if (bookNum) {
+      logText += `Book: ${bookNum}\n`;
+    }
     if (block.dataset.lineNumber) {
       const num = parseInt(block.dataset.lineNumber, 10);
       logText += `Line Number: ${num}\n`;
@@ -114,8 +160,27 @@ export function saveTranslations() {
       logText += `| ${greek} | ${translation} | ${form} |\n`;
     });
 
+    // blank line separates the word table from the trailing metadata below
+    logText += '\n';
+
     if (guess) {
       logText += `Phrase Guess: ${guess}\n`;
+    }
+
+    // reference (Lattimore) translation, if the user revealed it for this line
+    const chunkEl = block.querySelector('.translation-chunk');
+    const referenceTranslation = chunkEl
+      ? Array.from(chunkEl.querySelectorAll('div')).map(d => d.textContent.trim()).join(' ')
+      : '';
+    if (referenceTranslation) {
+      logText += `Reference Translation: ${referenceTranslation}\n`;
+    }
+
+    // tutor analysis, if the user generated one for this line
+    const tutorOutput = block.querySelector('.tutor-output');
+    const tutorAnalysis = tutorOutput ? tutorOutput.textContent.trim() : '';
+    if (tutorAnalysis) {
+      logText += `Tutor Analysis:\n${tutorAnalysis}\n`;
     }
 
     // timing info per line
@@ -123,22 +188,21 @@ export function saveTranslations() {
     logText += '===END_BLOCK===\n\n';
   });
 
-  // 7) Append new logs to existing storage
-  const existing = localStorage.getItem('translationLines') || '';
-  localStorage.setItem('translationLines', existing + logText);
+  // 7) Append new logs to the server-side translation journal file
+  await appendLog(logText);
 
   // 8) Refresh displayed log
-  loadTranslations();
+  await loadTranslations();
 
   return lastLineNumber;
 }
 
 /**
- * Reads stored translation logs and renders the most recent entries
- * into the #translationLog element as formatted tables.
+ * Reads the translation journal from the server and renders the most recent
+ * entries into the #translationLog element as formatted tables.
  */
-export function loadTranslations() {
-  const raw = localStorage.getItem('translationLines') || '';
+export async function loadTranslations() {
+  const raw = await fetchLog(true);
   const logEl = document.getElementById('translationLog');
 
   // If no logs exist, show placeholder
@@ -170,8 +234,8 @@ export function loadTranslations() {
     const tableEnd = lines.indexOf('', tableStart);
     const tableLines = lines.slice(tableStart, tableEnd > -1 ? tableEnd : lines.length);
 
-    // Remaining lines (phrase & timing)
-    const otherLines = lines.slice(tableEnd > -1 ? tableEnd + 1 : tableLines.length);
+    // Remaining lines (phrase, tutor analysis & timing)
+    const otherLines = lines.slice(tableEnd > -1 ? tableEnd + 1 : lines.length);
 
     // Create block container
     const blockEl = document.createElement('div');
