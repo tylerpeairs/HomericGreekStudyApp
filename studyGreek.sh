@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# start.sh — launch Anki, static server, Puppeteer proxy, and open browser
+# studyGreek.sh — launch Anki, static server, lookup server, and open browser
 
 # Ensure we always return to this script's directory
 cd "$(dirname "$0")"
@@ -24,7 +24,7 @@ open -a "Anki"
 echo "Starting static file server on http://localhost:8000..."
 nohup python3 -m http.server 8000 >/dev/null 2>&1 &
 
-echo "Starting Puppeteer proxy on http://localhost:3001..."
+echo "Starting lookup server on http://localhost:3001..."
 nohup arch -arm64 node js/server.js >/dev/null 2>&1 &
 
 # Detach the background processes fully from this script's session
@@ -38,7 +38,7 @@ open http://localhost:8000
 
 sleep 1
 if lsof -i :3001 > /dev/null; then
-  echo "Puppeteer proxy (port 3001) is running."
+  echo "Lookup server (port 3001) is running."
 else
-  echo "Warning: Puppeteer proxy (port 3001) is NOT running."
+  echo "Warning: lookup server (port 3001) is NOT running."
 fi
