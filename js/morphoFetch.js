@@ -1,49 +1,84 @@
-// Load cache from localStorage (array of [word,data]) or start empty
-const stored = JSON.parse(localStorage.getItem('morphoCache') || '[]');
+/**
+ * morphoFetch.js
+ * Morphological parses and short definitions, served by the local Homer index.
+ *
+ * The cache key is versioned: entries written while this went through Logeion
+ * hold a different parse shape and would render as empty rows.
+ */
+const CACHE_KEY = 'morphoCacheV2';
+const stored = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
 const morphoCache = new Map(stored);
 
 /**
- * Fetches morphological data for a given Greek word, using a persistent cache.
- * On first lookup it proxies the scrape through your local server (/api/lookup),
- * caches the result, persists it, and calls showDefinitionPopup();
- * on subsequent lookups it serves instantly from localStorage.
+ * Fetches morphological data for a Greek word.
+ *
+ * Passing book and line lets the server answer from the treebank's annotation
+ * of that exact token, so an ambiguous form comes back already disambiguated
+ * rather than as a list of everything it could be.
+ *
+ * @param {string} word — the Greek word as it appears in the line
+ * @param {string|number} [book] — Iliad book number
+ * @param {string|number} [line] — line number within that book
+ * @returns {Promise<{word:string, parses:Array, definitions:string[], source:string}>}
  */
-export async function loadMorphoData(word) {
-  // Serve from cache if available and valid
-  if (morphoCache.has(word)) {
-    const cached = morphoCache.get(word);
-    const html = generateMorphoHtml(cached);
-    if (!html.includes('No data found')) {
-      return cached;
-    }
+export async function loadMorphoData(word, book, line) {
+  const cacheKey = book != null && line != null ? `${word}|${book}.${line}` : word;
+  if (morphoCache.has(cacheKey)) {
+    const cached = morphoCache.get(cacheKey);
+    if (cached?.parses?.length) return cached;
   }
+
+  const params = new URLSearchParams({ word });
+  if (book != null) params.set('book', book);
+  if (line != null) params.set('line', line);
+
   try {
-    const res = await fetch(`http://localhost:3001/api/lookup?word=${encodeURIComponent(word)}`);
+    const res = await fetch(`http://localhost:3001/api/lookup?${params}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    // Cache and persist
-    morphoCache.set(word, data);
-    localStorage.setItem('morphoCache', JSON.stringify([...morphoCache]));
+    morphoCache.set(cacheKey, data);
+    localStorage.setItem(CACHE_KEY, JSON.stringify([...morphoCache]));
     return data;
   } catch (err) {
     return { error: err.message };
   }
 }
 
-// Helper to build HTML from morpho data
-export function generateMorphoHtml({ parses = [], definitions = [] }) {
+/** Escapes text before it goes into innerHTML. */
+function escapeHtml(text) {
+  return String(text ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * Builds the morphology panel.
+ * Each parse carries its own gloss and Homer frequency, so a form with more
+ * than one possible lemma shows how common each reading actually is.
+ */
+export function generateMorphoHtml({ parses = [], definitions = [] } = {}) {
   let html = '';
   if (parses.length) {
     html += '<h3>Parses</h3><ul>';
     parses.forEach(p => {
-      html += `<li><strong>${p.lemma}</strong>: ${p.parse}</li>`;
+      const bits = [`<strong>${escapeHtml(p.lemma)}</strong>`];
+      if (p.parse) bits.push(escapeHtml(p.parse));
+      if (p.definition) bits.push(`<em>${escapeHtml(p.definition)}</em>`);
+      let row = bits.join(' — ');
+      if (p.total) {
+        row += ` <span class="freq">(Iliad ${p.iliad}, Odyssey ${p.odyssey})</span>`;
+      }
+      html += `<li>${row}</li>`;
     });
     html += '</ul>';
   }
-  if (definitions.length) {
+  // Kept for parses that carry no gloss of their own.
+  const extra = definitions.filter(d => !parses.some(p => p.definition === d));
+  if (extra.length) {
     html += '<h3>Definitions</h3><ul>';
-    definitions.forEach(def => {
-      html += `<li>${def}</li>`;
+    extra.forEach(def => {
+      html += `<li>${escapeHtml(def)}</li>`;
     });
     html += '</ul>';
   }

@@ -133,11 +133,13 @@ function initializeApp() {
     startTime = Date.now()
     if (!selected.length) return alert('Select at least one line to generate.');
     clearLinesContainer();
+    // Word lookups use the treebank's parse for this exact book and line.
+    const bookNum = document.getElementById('bookSelector').value;
     selected.forEach(item => {
       const n = item.getAttribute('data-n');
       const text = item.getAttribute('data-text');
       // Create the line block (row)
-      const row = createLineBlock(n, text);
+      const row = createLineBlock(n, text, bookNum);
       // Add the "Add Formless to Anki" column (checkbox)
       if (row && row.querySelector) {
         // Try to find the table row; if createLineBlock returns the tr, append td; if not, try to find it

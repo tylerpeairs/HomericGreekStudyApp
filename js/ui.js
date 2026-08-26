@@ -8,7 +8,7 @@
  */
 
 // --- Data fetch utilities ---
-import { fetchResultsLength } from './corpusFetch.js';
+import { fetchHits } from './corpusFetch.js';
 import { loadMorphoData, generateMorphoHtml } from './morphoFetch.js';
 
 
@@ -16,7 +16,7 @@ import { loadMorphoData, generateMorphoHtml } from './morphoFetch.js';
 import { getTranslationChunk } from './translationLoader.js';
 import { requestAnalysis } from './analysisLoader.js';
 
-export function createLineBlock(lineNumber, text) {
+export function createLineBlock(lineNumber, text, bookNumber) {
   const container = document.getElementById('linesContainer');
 
 
@@ -140,6 +140,8 @@ export function createLineBlock(lineNumber, text) {
   // Metadata for saving
   block.dataset.lineNumber = lineNumber;
   block.dataset.originalLine = text;
+  // The book is what lets word lookups use the treebank's in-context parse.
+  if (bookNumber != null) block.dataset.book = bookNumber;
   container.appendChild(block);
 
   // --- Click handlers: load fresh corpus count, morphology, and display in morpho-output ---
@@ -147,17 +149,24 @@ export function createLineBlock(lineNumber, text) {
     span.style.cursor = 'pointer';
     span.addEventListener('click', async () => {
       const word = span.textContent;
-      let count, data;
-      try {
-        [count, data] = await Promise.all([
-          fetchResultsLength(word),
-          loadMorphoData(word)
-        ]);
-      } catch {
-        count = await fetchResultsLength(word);
-        data = null;
+      // Both endpoints resolve the inflected form to its lemma themselves, so
+      // these no longer have to run in sequence.
+      const [hits, data] = await Promise.all([
+        fetchHits(word, bookNumber, lineNumber).catch(() => null),
+        loadMorphoData(word, bookNumber, lineNumber).catch(() => null),
+      ]);
+
+      let hitsHtml;
+      if (!hits) {
+        hitsHtml = '<p>Corpus hits: N/A</p>';
+      } else if (!hits.lemma) {
+        hitsHtml = `<p>Corpus hits: no lemma found for ${word}</p>`;
+      } else {
+        hitsHtml = `<p>Corpus hits: <strong>${hits.resultsLength}</strong> in Homer `
+                 + `(${hits.lemma} — Iliad ${hits.iliad}, Odyssey ${hits.odyssey})</p>`;
       }
-      const html = `<p>Corpus hits: ${count}</p>` +
+
+      const html = hitsHtml +
                    (data ? generateMorphoHtml(data) : '<p>Error loading morphology</p>');
       span.closest('.line-block')
           .querySelector('.morpho-output').innerHTML = html;

@@ -3,15 +3,16 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
-    "openai": "^5.10.2",
-    "puppeteer": "^24.9.0"
+    "openai": "^5.10.2"
   },
   "name": "homericgreekstudyapp",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:index": "node scripts/buildHomerIndex.js",
+    "verify:index": "node scripts/verifyHomerIndex.js"
   },
   "keywords": [],
   "author": "",

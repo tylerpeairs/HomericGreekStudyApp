@@ -1,20 +1,21 @@
 /**
  * server.js
  * Express server providing:
- *  - /api/hits endpoint: fetches corpus hit counts from ARTFL PHILologic via Puppeteer
- *  - /api/lookup endpoint: scrapes morphological parses and short definitions from Logeion via Puppeteer
+ *  - /api/hits endpoint: lemma frequency in Homer, from the local Perseus index
+ *  - /api/lookup endpoint: morphological parses and short definitions, from the same index
+ *  - /api/concordance endpoint: every line in Homer where a lemma occurs
  *  - /api/tutor-analysis endpoint: provides Homeric Greek tutor analysis via OpenAI GPT-5
  *  - /api/translation-log endpoint: reads/appends the translation journal file on disk
  * Author: Tyler Peairs
  */
 // --- External libraries ---
 import express from 'express';
-import puppeteer from 'puppeteer';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { OpenAI } from 'openai';
 import fs from 'fs/promises';
 import path from 'path';
+import { loadHomerIndex, lookup, count, concordance } from './homerIndex.js';
 dotenv.config();
 
 const TRANSLATION_LOG_PATH = path.resolve('data', 'translationJournal.md');
@@ -36,103 +37,113 @@ console.log('Node is running as architecture:', process.arch);
 
 /**
  * GET /api/hits
- * Retrieves the number of concordance hits for a Greek word in the Iliad.
+ * Lemma frequency across Homer (Iliad + Odyssey), matching the totals ARTFL
+ * reports for author=Homer.
+ *
+ * The clicked word is an inflected form, so it is resolved to its lemma first —
+ * counting the surface form directly is what made this endpoint report 0 for
+ * nearly every word it was previously asked about.
+ *
  * Query parameters:
- *   - word: the Greek word to search (required)
- * Response: JSON { resultsLength: number }
+ *   - word: the Greek word as it appears in the line (required)
+ *   - book, line: Iliad location, for the in-context parse (optional)
+ * Response: JSON { resultsLength, iliad, odyssey, lemma, lemmas[] }
  */
-app.get('/api/hits', async (req, res) => {
-  const { word } = req.query;
+app.get('/api/hits', (req, res) => {
+  const { word, book, line } = req.query;
   if (!word) {
     console.log('No word provided in query.');
     return res.status(400).json({ error: 'Missing word' });
   }
 
   try {
-    console.log(`Fetching concordance hits for word: ${word}`);
-    const url = `https://artflsrv03.uchicago.edu/philologic4/Greek/query`
-      + `?report=concordance`
-      + `&method=proxy`
-      + `&q=${encodeURIComponent('lemma:' + word)}`
-      + `&author=Homer`
-      + `&start=0&end=0`;
-    console.log(`Visiting URL: ${url}`);
-
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle2' });
-    console.log(`Page loaded: ${url}`);
-
-    const selector = '#search-hits[description]';
-    if (await page.$(selector)) {
-      const count = await page.$eval('#search-hits', el => JSON.parse(el.getAttribute('description')).resultsLength);
-      console.log(`Found hit count: ${count}`);
-      await browser.close();
-      res.json({ resultsLength: count });
-    } else {
-      console.log('Selector not found. Returning 0 results.');
-      await browser.close();
-      res.json({ resultsLength: 0 });
+    const { analyses, source } = lookup(word, book, line);
+    if (!analyses.length) {
+      console.log(`No lemma found for word: ${word}`);
+      return res.json({ resultsLength: 0, iliad: 0, odyssey: 0, lemma: null, lemmas: [] });
     }
+
+    // Distinct lemmas, most frequent first — an ambiguous form should lead with
+    // the reading the reader is most likely looking at.
+    const byLemma = new Map();
+    for (const item of analyses) {
+      if (!byLemma.has(item.lemma)) byLemma.set(item.lemma, count(item.lemma));
+    }
+    const lemmas = [...byLemma].map(([lemma, counts]) => ({ lemma, ...counts }));
+    lemmas.sort((a, b) => b.total - a.total);
+
+    const primary = lemmas[0];
+    console.log(`Hits for "${word}" [${source}]: ${primary.lemma} = ${primary.total}`);
+    res.json({
+      resultsLength: primary.total,
+      iliad: primary.iliad,
+      odyssey: primary.odyssey,
+      lemma: primary.lemma,
+      lemmas,
+    });
   } catch (err) {
-    console.error(`Error fetching hits for word "${word}":`, err);
+    console.error(`Error looking up hits for word "${word}":`, err);
     res.status(500).json({ error: err.message });
   }
 });
 
 /**
  * GET /api/lookup
- * Scrapes morphological parses and short definitions for a Greek word from Logeion.
+ * Morphological parses and short definitions for a Greek word.
+ *
+ * When book and line are supplied the parse comes from the treebank's own
+ * annotation of that token, so it is already disambiguated in context rather
+ * than a list of everything the form could theoretically be.
+ *
  * Query parameters:
- *   - word: the Greek word to lookup (required)
- * Response: JSON { word: string, parses: Array<{lemma:string, parse:string}>, definitions: string[] }
+ *   - word: the Greek word to look up (required)
+ *   - book, line: Iliad location (optional)
+ * Response: JSON { word, parses: Array<{lemma, parse, ...}>, definitions: string[], source }
  */
-app.get('/api/lookup', async (req, res) => {
-  const word = req.query.word || '';
+app.get('/api/lookup', (req, res) => {
+  const { word, book, line } = req.query;
   if (!word) return res.status(400).json({ error: 'Missing word' });
   try {
-    console.log(`Fetching morphology for word: ${word}`);
-    const url = `https://logeion.uchicago.edu/morpho/${encodeURIComponent(word)}`;
-    console.log(`Visiting URL: ${url}`);
+    const { analyses, source } = lookup(word, book, line);
 
-    const browser = await puppeteer.launch({ headless: true });
-    const page = await browser.newPage();
-    await page.goto(url, {
-      waitUntil: 'domcontentloaded',
-      timeout: 60000,
-    });
-    await new Promise(resolve => setTimeout(resolve, 8000));
-    console.log(`Page loaded: ${url}`);
+    const parses = analyses.map(item => ({
+      lemma: item.lemma,
+      parse: item.parse,
+      postag: item.postag,
+      definition: item.definition,
+      iliad: item.iliad,
+      odyssey: item.odyssey,
+      total: item.total,
+    }));
 
-    await page.waitForSelector('ul.parse li', { timeout: 45000 });
-    console.log('Found morphological parse selector.');
+    // Dedupe glosses while keeping lemma order — an ambiguous form can share one.
+    const definitions = [...new Set(analyses.map(item => item.definition).filter(Boolean))];
 
-    const parses = await page.$$eval('ul.parse li', lis =>
-      lis.map(li => {
-        const lemmaNode = li.querySelector('p a');
-        const lemmaText = lemmaNode ? lemmaNode.textContent.trim() : '';
-        const parseNode = li.querySelector('p[ng-bind-html]');
-        const parseText = parseNode ? parseNode.textContent.trim() : '';
-        return { lemma: lemmaText, parse: parseText };
-      })
-    );
-
-    let definitions = [];
-    const shortDefSelector = 'div[ng-if="vm.shortDef.length > 0"] ul li';
-    if (await page.$(shortDefSelector)) {
-      console.log('Found short definition selector.');
-      definitions = await page.$$eval(shortDefSelector, lis =>
-        lis.map(li => li.textContent.trim())
-      );
-    } else {
-      console.log('No short definitions found.');
-    }
-
-    await browser.close();
-    console.log(`Returning results for word: ${word}`);
-    res.json({ word, parses, definitions });
+    console.log(`Lookup "${word}" [${source}]: ${parses.length} parse(s)`);
+    res.json({ word, parses, definitions, source });
   } catch (err) {
-    console.error(`Error fetching morphology for word "${word}":`, err);
+    console.error(`Error looking up morphology for word "${word}":`, err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/concordance
+ * Every line in Homer where a lemma occurs, as "I:book.line" / "O:book.line".
+ * Query parameters:
+ *   - lemma: the dictionary form (required)
+ *   - limit: maximum citations to return (optional, default 200)
+ * Response: JSON { lemma, total, cites: string[] }
+ */
+app.get('/api/concordance', (req, res) => {
+  const { lemma } = req.query;
+  if (!lemma) return res.status(400).json({ error: 'Missing lemma' });
+  try {
+    const limit = Number.parseInt(req.query.limit, 10) || 200;
+    const counts = count(lemma);
+    res.json({ lemma, total: counts.total, cites: concordance(lemma, limit) });
+  } catch (err) {
+    console.error(`Error building concordance for lemma "${lemma}":`, err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -208,5 +219,18 @@ app.post('/api/translation-log', async (req, res) => {
   }
 });
 
-// Start the Puppeteer proxy server
-app.listen(PORT, () => console.log(`Puppeteer service listening on ${PORT}`));
+// Load the Homer index before accepting requests, so no lookup races the parse.
+let index;
+try {
+  index = await loadHomerIndex();
+} catch (err) {
+  // A missing index is a setup step, not a crash worth a stack trace.
+  console.error(err.message);
+  process.exit(1);
+}
+console.log(
+  `Homer index loaded: ${Object.keys(index.lemmas).length.toLocaleString()} lemmas, ` +
+  `${Object.keys(index.forms).length.toLocaleString()} forms`
+);
+
+app.listen(PORT, () => console.log(`Study service listening on ${PORT}`));

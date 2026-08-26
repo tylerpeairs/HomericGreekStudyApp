@@ -392,6 +392,13 @@ td[contenteditable="true"]:hover {
   color: var(--neutral-800);
 }
 
+/* Per-lemma frequency sits beside the parse without competing with it. */
+.morpho-output .freq {
+  color: var(--neutral-500, #6b7280);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 /* -------------------------------------------------------------------------
    Translation Log
 ------------------------------------------------------------------------- */
