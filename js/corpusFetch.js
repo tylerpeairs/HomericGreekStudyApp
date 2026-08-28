@@ -7,6 +7,7 @@
  * results after a rebuild — which is exactly what it did while lookups still
  * went out to ARTFL and Logeion.
  */
+import { requestLookup } from './lookupClient.js';
 
 /**
  * Fetches lemma frequency in Homer for a word.
@@ -20,14 +21,6 @@
  * @param {string|number} [line] — line number within that book
  * @returns {Promise<{resultsLength:number, iliad:number, odyssey:number, lemma:string|null, lemmas:Array}>}
  */
-export async function fetchHits(word, book, line) {
-  const params = new URLSearchParams({ word });
-  if (book != null) params.set('book', book);
-  if (line != null) params.set('line', line);
-
-  const response = await fetch(`http://localhost:3001/api/hits?${params}`);
-  if (!response.ok) {
-    throw new Error(`Error fetching hits: ${response.status} ${response.statusText}`);
-  }
-  return response.json();
+export function fetchHits(word, book, line) {
+  return requestLookup('/api/hits', word, book, line);
 }

@@ -6,6 +6,7 @@
  * a stale count, because it renders a parse in a shape the current UI no longer
  * understands.
  */
+import { requestLookup } from './lookupClient.js';
 
 /**
  * Fetches morphological data for a Greek word.
@@ -14,23 +15,17 @@
  * of that exact token, so an ambiguous form comes back already disambiguated
  * rather than as a list of everything it could be.
  *
+ * Rejects rather than resolving to an error object: the caller has to tell an
+ * unreachable server apart from a word the index lacks, and swallowing the
+ * failure here erased that difference.
+ *
  * @param {string} word — the Greek word as it appears in the line
  * @param {string|number} [book] — Iliad book number
  * @param {string|number} [line] — line number within that book
  * @returns {Promise<{word:string, parses:Array, definitions:string[], source:string}>}
  */
-export async function loadMorphoData(word, book, line) {
-  const params = new URLSearchParams({ word });
-  if (book != null) params.set('book', book);
-  if (line != null) params.set('line', line);
-
-  try {
-    const res = await fetch(`http://localhost:3001/api/lookup?${params}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  } catch (err) {
-    return { error: err.message };
-  }
+export function loadMorphoData(word, book, line) {
+  return requestLookup('/api/lookup', word, book, line);
 }
 
 /** Escapes text before it goes into innerHTML. */
