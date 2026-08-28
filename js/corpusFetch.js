@@ -2,13 +2,11 @@
  * corpusFetch.js
  * Corpus frequency for a Greek word, served by the local Homer index.
  *
- * The cache key is versioned: entries written before the local index existed
- * hold the zeros the old lemma: search returned for inflected forms, and would
- * otherwise be served forever.
+ * Not cached. The index answers in about a millisecond, so a cache would only
+ * buy a round trip on localhost while creating a way for the UI to show stale
+ * results after a rebuild — which is exactly what it did while lookups still
+ * went out to ARTFL and Logeion.
  */
-const CACHE_KEY = 'hitsCacheV2';
-const stored = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
-const hitsCache = new Map(stored);
 
 /**
  * Fetches lemma frequency in Homer for a word.
@@ -23,12 +21,6 @@ const hitsCache = new Map(stored);
  * @returns {Promise<{resultsLength:number, iliad:number, odyssey:number, lemma:string|null, lemmas:Array}>}
  */
 export async function fetchHits(word, book, line) {
-  // Context can change which lemma a form resolves to, so it belongs in the key.
-  const cacheKey = book != null && line != null ? `${word}|${book}.${line}` : word;
-  if (hitsCache.has(cacheKey)) {
-    return hitsCache.get(cacheKey);
-  }
-
   const params = new URLSearchParams({ word });
   if (book != null) params.set('book', book);
   if (line != null) params.set('line', line);
@@ -37,9 +29,5 @@ export async function fetchHits(word, book, line) {
   if (!response.ok) {
     throw new Error(`Error fetching hits: ${response.status} ${response.statusText}`);
   }
-  const data = await response.json();
-
-  hitsCache.set(cacheKey, data);
-  localStorage.setItem(CACHE_KEY, JSON.stringify([...hitsCache]));
-  return data;
+  return response.json();
 }
