@@ -2,12 +2,10 @@
  * morphoFetch.js
  * Morphological parses and short definitions, served by the local Homer index.
  *
- * The cache key is versioned: entries written while this went through Logeion
- * hold a different parse shape and would render as empty rows.
+ * Not cached — see the note in corpusFetch.js. A stale entry here is worse than
+ * a stale count, because it renders a parse in a shape the current UI no longer
+ * understands.
  */
-const CACHE_KEY = 'morphoCacheV2';
-const stored = JSON.parse(localStorage.getItem(CACHE_KEY) || '[]');
-const morphoCache = new Map(stored);
 
 /**
  * Fetches morphological data for a Greek word.
@@ -22,12 +20,6 @@ const morphoCache = new Map(stored);
  * @returns {Promise<{word:string, parses:Array, definitions:string[], source:string}>}
  */
 export async function loadMorphoData(word, book, line) {
-  const cacheKey = book != null && line != null ? `${word}|${book}.${line}` : word;
-  if (morphoCache.has(cacheKey)) {
-    const cached = morphoCache.get(cacheKey);
-    if (cached?.parses?.length) return cached;
-  }
-
   const params = new URLSearchParams({ word });
   if (book != null) params.set('book', book);
   if (line != null) params.set('line', line);
@@ -35,10 +27,7 @@ export async function loadMorphoData(word, book, line) {
   try {
     const res = await fetch(`http://localhost:3001/api/lookup?${params}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    morphoCache.set(cacheKey, data);
-    localStorage.setItem(CACHE_KEY, JSON.stringify([...morphoCache]));
-    return data;
+    return await res.json();
   } catch (err) {
     return { error: err.message };
   }

@@ -9,7 +9,19 @@ export let startTime;
 
 
 
+// Word lookup is served from the local index and no longer cached, so these
+// keys are dead weight. The pre-index entries are also actively wrong: they
+// hold the zeros the old lemma: search returned for inflected forms, and
+// Logeion-shaped parses the current UI cannot render.
+function clearRetiredLookupCaches() {
+  for (const key of ['hitsCache', 'morphoCache', 'hitsCacheV2', 'morphoCacheV2']) {
+    localStorage.removeItem(key);
+  }
+}
+
 function initializeApp() {
+  clearRetiredLookupCaches();
+
   // --- Translation log controls ---
   document.getElementById('saveBtn').addEventListener('click', async () => {
     try {

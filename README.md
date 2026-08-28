@@ -221,9 +221,10 @@ Spot-checks 40 lemmas against ARTFL, sampled across the frequency range. Pass `-
 for a different sample size. Read the results with the caveats in
 [Counts differ from ARTFL](#counts-differ-from-artfl-deliberately) in mind.
 
-Note that the front end caches lookups in `localStorage` under versioned keys
-(`hitsCacheV2`, `morphoCacheV2`). If you change the shape of a lookup response, bump the
-version in `corpusFetch.js` and `morphoFetch.js` so stale entries are ignored.
+Word lookups are deliberately **not** cached in the browser. The index answers in about a
+millisecond, so a cache saves nothing measurable while creating a way for the UI to show
+results from a previous build. If you change a lookup response shape, no cache invalidation
+is needed — but do hard-reload, since browsers cache the ES modules themselves.
 
 ## Contributing
 
