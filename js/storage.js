@@ -6,7 +6,10 @@
  * Author: Tyler Peairs
  */
 // --- App timing and flashcard utilities ---
-import { addFlashcard, addFormFlashcard } from './flashcard.js';
+import { addFlashcard, addConjugationFlashcard } from './flashcard.js';
+
+// Lemma resolution for the vocabulary cards.
+import { fetchHits } from './corpusFetch.js';
 
 // Timing progress import
 import { startTime } from './app.js';
@@ -85,6 +88,34 @@ function getLastOriginalLine(raw) {
 }
 
 /**
+ * Resolves a word to the lemma its corpus hits are counted under.
+ *
+ * Clicking a word already resolves this, so the common path is a dataset read;
+ * a word the reader checked without ever clicking gets its own lookup here.
+ * A failed lookup falls back to the surface form rather than dropping the card.
+ *
+ * @param {HTMLTableRowElement} tr - the word's row, used as the lemma cache
+ * @param {string} word - the Greek word as it appears in the line
+ * @param {string|number} [book] - Iliad book number
+ * @param {string|number} [line] - line number within that book
+ * @returns {Promise<string>}
+ */
+async function resolveLemma(tr, word, book, line) {
+  if (tr.dataset.lemma) return tr.dataset.lemma;
+  try {
+    const { lemma } = await fetchHits(word, book, line);
+    if (lemma) {
+      tr.dataset.lemma = lemma;
+      return lemma;
+    }
+    console.warn(`No lemma found for "${word}"; carding the form itself.`);
+  } catch (err) {
+    console.error(`Lemma lookup failed for "${word}":`, err);
+  }
+  return word;
+}
+
+/**
  * Gathers translation data from each .line-block, computes timing,
  * and appends formatted markdown blocks to the server-side translation journal.
  */
@@ -111,9 +142,9 @@ export async function saveTranslations() {
   let lastOriginalLine = getLastOriginalLine(await fetchLog());
   let originalLines = '';
 
-  blocks.forEach(block => {
+  for (const block of blocks) {
     const rows = Array.from(block.querySelectorAll('tbody tr'));
-    if (rows.length === 0) return;
+    if (rows.length === 0) continue;
     if (!logText) {
     }
     originalLines = lastOriginalLine + block.dataset.originalLine
@@ -143,22 +174,32 @@ export async function saveTranslations() {
 
 
     // each word row
-    rows.forEach(tr => {
+    for (const tr of rows) {
       const [greekTD, transTD, formTD] = Array.from(tr.children);
       const greek = greekTD.textContent.trim();
       const translation = transTD.textContent.trim();
       const form = formTD.textContent.trim();
       const checkbox = tr.querySelector('.add-to-anki-checkbox');
       if (checkbox?.checked) {
-
-        addFlashcard(originalLines, greek, translation, guess);
+        // Vocabulary is learned per lemma — the same unit the hit counts are
+        // reported for — with the inflected form along for the ride.
+        const lemma = await resolveLemma(
+          tr, greek, block.dataset.book ?? bookNum, block.dataset.lineNumber
+        );
+        addFlashcard({
+          lemma,
+          form: greek,
+          translation,
+          originalLines,
+          phraseGuess: guess,
+        });
       }
-      const formCheckbox = tr.querySelector('.add-to-anki-form-checkbox');
-      if (formCheckbox?.checked) {
-        addFormFlashcard(originalLines, greek, form, guess);
+      const conjugationCheckbox = tr.querySelector('.add-to-anki-conjugation-checkbox');
+      if (conjugationCheckbox?.checked) {
+        addConjugationFlashcard(originalLines, greek, form, guess);
       }
       logText += `| ${greek} | ${translation} | ${form} |\n`;
-    });
+    }
 
     // blank line separates the word table from the trailing metadata below
     logText += '\n';
@@ -186,7 +227,7 @@ export async function saveTranslations() {
     // timing info per line
     logText += `Time Data: ${secsPerLine} seconds per line\n`;
     logText += '===END_BLOCK===\n\n';
-  });
+  }
 
   // 7) Append new logs to the server-side translation journal file
   await appendLog(logText);

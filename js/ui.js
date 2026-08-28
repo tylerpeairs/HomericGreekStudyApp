@@ -9,6 +9,7 @@
 
 // --- Data fetch utilities ---
 import { fetchHits } from './corpusFetch.js';
+import { LookupUnavailableError } from './lookupClient.js';
 import { loadMorphoData, generateMorphoHtml } from './morphoFetch.js';
 
 
@@ -43,7 +44,7 @@ export function createLineBlock(lineNumber, text, bookNumber) {
         <th>Word (Translation)</th>
         <th>Form</th>
         <th>Add to Anki</th>
-        <th>Add Form to Anki</th>
+        <th>Add Conjugation to Anki</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -60,7 +61,7 @@ export function createLineBlock(lineNumber, text, bookNumber) {
       <td contenteditable="true"></td>
       <td contenteditable="true"></td>
       <td><input type="checkbox" class="add-to-anki-checkbox" /></td>
-      <td><input type="checkbox" class="add-to-anki-form-checkbox" /></td>
+      <td><input type="checkbox" class="add-to-anki-conjugation-checkbox" /></td>
     `;
     tbody.appendChild(tr);
   });
@@ -77,61 +78,86 @@ export function createLineBlock(lineNumber, text, bookNumber) {
   `;
   block.appendChild(phraseContainer);
 
+  // The translation last revealed for this block. Tutor Analysis reads it from
+  // here rather than closing over one reveal's result, so re-revealing keeps
+  // the two in step.
+  let revealedChunk = [];
+
+  /**
+   * Adds the Tutor Analysis button, once. "Show Translation" can be clicked
+   * any number of times, and the button belongs to the block rather than to a
+   * particular reveal.
+   */
+  function ensureTutorButton() {
+    if (phraseContainer.querySelector('.tutor-btn')) return;
+    const tutorBtn = document.createElement('button');
+    tutorBtn.type = 'button';
+    tutorBtn.className = 'tutor-btn';
+    tutorBtn.textContent = 'Tutor Analysis';
+    phraseContainer.appendChild(tutorBtn);
+    tutorBtn.addEventListener('click', onTutorAnalysis);
+  }
+
+  /** Sends this line's guesses, with the revealed translation, for feedback. */
+  async function onTutorAnalysis() {
+    const words = [];
+    table.querySelectorAll('tbody tr').forEach(row => {
+      const word = row.querySelector('.morpho-word').textContent;
+      const translationGuess = row.children[1].textContent.trim();
+      const formGuess = row.children[2].textContent.trim();
+      words.push({ word, translationGuess, formGuess });
+    });
+    const payload = {
+      lineNumber: block.dataset.lineNumber,   // target line number in the Iliad
+      originalLine: block.dataset.originalLine, // Greek text of the target line
+      wordGuesses: words,                     // array of { word, translationGuess, formGuess }
+      userTranslation: phraseContainer.querySelector('.phrase-input').value.trim(),
+      actualTranslation: revealedChunk.map(c => c.text).join(' '),
+    };
+    try {
+      console.log('Tutor Analysis Payload:', payload);
+      const analysis = await requestAnalysis(payload);
+      console.log('Tutor Analysis Response:', analysis);
+      // Display analysis below button
+      let outputDiv = phraseContainer.querySelector('.tutor-output');
+      if (!outputDiv) {
+        outputDiv = document.createElement('div');
+        outputDiv.className = 'tutor-output';
+        outputDiv.style.whiteSpace = 'pre-wrap';
+        phraseContainer.appendChild(outputDiv);
+      }
+      outputDiv.textContent = analysis;
+    } catch (err) {
+      console.error('Tutor Analysis Error:', err);
+    }
+  }
+
   // On click, load and display the 5-line translation chunk
   phraseContainer.querySelector('.translation-btn').addEventListener('click', async () => {
-    const bookNum = document.getElementById('bookSelector').value;
+    // The book this block was generated from — not whatever the selector shows
+    // now. Reading the selector at click time resolved against the wrong book
+    // whenever it had been changed without regenerating the blocks.
+    const bookNum = bookNumber ?? document.getElementById('bookSelector').value;
     const lineNum = parseInt(block.dataset.lineNumber, 10);
     const output = phraseContainer.querySelector('.translation-chunk');
     output.innerHTML = '<p>Loading translation...</p>';
     try {
       const chunk = await getTranslationChunk(bookNum, lineNum);
-      const html = chunk
-        .map(c => `<div><strong>${c.n}</strong> ${c.text}</div>`)
-        .join('');
-      output.innerHTML = html;
-      // Add Tutor Analysis button
-      const tutorBtn = document.createElement('button');
-      tutorBtn.type = 'button';
-      tutorBtn.className = 'tutor-btn';
-      tutorBtn.textContent = 'Tutor Analysis';
-      phraseContainer.appendChild(tutorBtn);
-      tutorBtn.addEventListener('click', async () => {
-        // Build payload for Tutor Analysis
-        const lineNumber = block.dataset.lineNumber;
-        const originalLine = block.dataset.originalLine;
-        const translationLines = chunk; // use the `chunk` variable from the outer scope
-        const words = [];
-        table.querySelectorAll('tbody tr').forEach(row => {
-          const word = row.querySelector('.morpho-word').textContent;
-          const translationGuess = row.children[1].textContent.trim();
-          const formGuess = row.children[2].textContent.trim();
-          words.push({ word, translationGuess, formGuess });
-        });
-        const phraseGuess = phraseContainer.querySelector('.phrase-input').value.trim();
-        const payload = {
-          lineNumber,                         // target line number in the Iliad
-          originalLine,                       // Greek text of the target line
-          wordGuesses: words,                 // array of objects with { word, translationGuess, formGuess }
-          userTranslation: phraseGuess,        // the user’s full-phrase translation guess
-          actualTranslation: chunk.map(c => c.text).join(' ') // the actual translation text for the chunk 
-        };
-        try {
-          console.log('Tutor Analysis Payload:', payload);
-          const analysis = await requestAnalysis(payload);
-          console.log('Tutor Analysis Response:', analysis);
-          // Display analysis below button
-          let outputDiv = phraseContainer.querySelector('.tutor-output');
-          if (!outputDiv) {
-            outputDiv = document.createElement('div');
-            outputDiv.className = 'tutor-output';
-            outputDiv.style.whiteSpace = 'pre-wrap';
-            phraseContainer.appendChild(outputDiv);
-          }
-          outputDiv.textContent = analysis;
-        } catch (err) {
-          console.error('Tutor Analysis Error:', err);
-        }
-      });
+      revealedChunk = chunk;
+      if (chunk.length) {
+        output.innerHTML = chunk
+          .map(c => `<div><strong>${c.n}</strong> ${c.text}</div>`)
+          .join('');
+      } else {
+        // The translation file stops short in seven books — book 24 ends at 536
+        // against the Greek text's 804 — so a missing line is a known gap, not
+        // a failure. Rendered as <p> rather than <div> on purpose: storage.js
+        // reads this panel's <div> children as the reference translation, and
+        // must not log this notice as if it were Lattimore's text.
+        output.innerHTML =
+          `<p class="translation-missing">No translation available for book ${bookNum}, line ${lineNum}.</p>`;
+      }
+      ensureTutorButton();
     } catch (err) {
       output.innerHTML = `<p>Error loading translation: ${err.message}</p>`;
     }
@@ -149,16 +175,39 @@ export function createLineBlock(lineNumber, text, bookNumber) {
     span.style.cursor = 'pointer';
     span.addEventListener('click', async () => {
       const word = span.textContent;
+      const output = span.closest('.line-block').querySelector('.morpho-output');
       // Both endpoints resolve the inflected form to its lemma themselves, so
-      // these no longer have to run in sequence.
-      const [hits, data] = await Promise.all([
-        fetchHits(word, bookNumber, lineNumber).catch(() => null),
-        loadMorphoData(word, bookNumber, lineNumber).catch(() => null),
+      // these no longer have to run in sequence. Settled rather than all: one
+      // failing should not discard what the other returned.
+      const [hitsResult, dataResult] = await Promise.allSettled([
+        fetchHits(word, bookNumber, lineNumber),
+        loadMorphoData(word, bookNumber, lineNumber),
       ]);
+
+      // A dead lookup server fails both calls and has one fix, so say that
+      // rather than reporting it twice as missing data.
+      const serverDown = [hitsResult, dataResult].some(
+        r => r.status === 'rejected' && r.reason instanceof LookupUnavailableError
+      );
+      if (serverDown) {
+        output.innerHTML =
+          '<p class="lookup-unavailable">Lookup server is not running. '
+          + 'Start it with <code>./studyGreek.sh</code>, or <code>node js/server.js</code>.</p>';
+        return;
+      }
+
+      const hits = hitsResult.status === 'fulfilled' ? hitsResult.value : null;
+      const data = dataResult.status === 'fulfilled' ? dataResult.value : null;
+
+      // The vocabulary card is keyed on the lemma, so hold on to the one this
+      // lookup resolved; saving falls back to its own lookup for words the
+      // reader checked without ever clicking.
+      const row = span.closest('tr');
+      if (row && hits?.lemma) row.dataset.lemma = hits.lemma;
 
       let hitsHtml;
       if (!hits) {
-        hitsHtml = '<p>Corpus hits: N/A</p>';
+        hitsHtml = `<p class="lookup-unavailable">Corpus hits unavailable: ${hitsResult.reason.message}</p>`;
       } else if (!hits.lemma) {
         hitsHtml = `<p>Corpus hits: no lemma found for ${word}</p>`;
       } else {
@@ -166,10 +215,10 @@ export function createLineBlock(lineNumber, text, bookNumber) {
                  + `(${hits.lemma} — Iliad ${hits.iliad}, Odyssey ${hits.odyssey})</p>`;
       }
 
-      const html = hitsHtml +
-                   (data ? generateMorphoHtml(data) : '<p>Error loading morphology</p>');
-      span.closest('.line-block')
-          .querySelector('.morpho-output').innerHTML = html;
+      const html = hitsHtml + (data
+        ? generateMorphoHtml(data)
+        : `<p class="lookup-unavailable">Morphology unavailable: ${dataResult.reason.message}</p>`);
+      output.innerHTML = html;
     });
   });
 

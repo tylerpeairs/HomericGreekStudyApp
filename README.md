@@ -35,7 +35,10 @@ reveal Lattimore's translation to compare. Timing starts when you generate the g
 your morphology, notes on syntax, a literal translation, and a study tip.
 
 **Journal and flashcards.** Saved sessions append to `data/translationJournal.md` on disk.
-Checked words export to Anki over AnkiConnect.
+Checked words export to Anki over AnkiConnect: *Add to Anki* makes a vocabulary card fronted
+by the word's lemma — the same unit the hit counts are reported for — with the inflected form
+on the back, and *Add Conjugation to Anki* makes a card fronted by the inflected form itself,
+backed by your parse of it.
 
 ## Requirements
 

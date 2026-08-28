@@ -349,6 +349,26 @@ td[contenteditable="true"]:hover {
   font-weight: 600;
 }
 
+/* A known gap in the translation source, not an error — stated plainly but
+   without the emphasis a real translation line gets. */
+.translation-chunk .translation-missing {
+  margin: 0;
+  color: var(--neutral-500, #6b7280);
+  font-style: italic;
+}
+
+/* Something the reader can act on, unlike a word the index simply lacks. */
+.morpho-output .lookup-unavailable {
+  color: var(--danger-color, #b91c1c);
+}
+
+.morpho-output .lookup-unavailable code {
+  padding: 1px 4px;
+  background: var(--neutral-100, #f3f4f6);
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
 .tutor-output {
   margin-top: 16px;
   padding: 16px;
