@@ -174,6 +174,14 @@ function betaToGreek(key) {
 // Abbreviations and connectives that open a fragment rather than a definition.
 const NOT_A_GLOSS = /^(later|cf|codd|v\.l|gen|pl|sq|etc|ibid|dim|Ep|Dor|Att|Ion|also|and|or)\b/i;
 const LEADS_NOWHERE = /^(at|in|of|and|also|or|from|with|by|for|prob|ap)\b/i;
+// LSJ's etymologies sit in the same places its definitions do, and they are
+// not English: a bracketed phonetic macro ("q[uglide]i"), a transliterated
+// Indo-European or Sanskrit root ("nṛ", "śáyate", "ner-"), or a trailing
+// author citation. Each one reached the card as though it were a meaning.
+const PHONETIC_MACRO = /\[[a-z]+ ?\]/;
+const TRANSLITERATED = /[ṛṇśṣṭḍṃḥṝḷǵḱĝḫṅñāīūēō]/;
+const CITATION_TAIL = /\b(?:Ev|Sch|Hes|Arat|Opp|Ael|Str|Plu|Matt|Parv|Hdn)\./;
+const BARE_ROOT = /^\*?[a-z]{1,8}-$/;
 
 /** Strips tags and entities from a fragment of entry markup. */
 function plainText(xml) {
@@ -201,6 +209,10 @@ function isGloss(text) {
     && !LEADS_NOWHERE.test(text)
     && /[a-z]{3}/.test(text)
     && !/[)(/\\=|+]/.test(text)
+    && !PHONETIC_MACRO.test(text)
+    && !TRANSLITERATED.test(text)
+    && !CITATION_TAIL.test(text)
+    && !BARE_ROOT.test(text)
   );
 }
 
@@ -408,6 +420,22 @@ function resolveCrossRef(headword, crossRefs, lemmas, visited) {
   return resolveCrossRef(target, crossRefs, lemmas, visited);
 }
 
+/**
+ * Whether a curated gloss is really an etymology rather than a meaning.
+ *
+ * A few majorplus entries are nothing but a reconstructed root — ζῶ is given
+ * as "g[uglide]iē-, g[uglide]iō-". Curated glosses otherwise lead unchallenged,
+ * so these have to be rejected here or they reach the card unfiltered; the
+ * lemma then falls through to LSJ, which usually has a real gloss for it.
+ */
+function isEtymologyOnly(gloss) {
+  return gloss
+    .split('; ')
+    .every(sense => PHONETIC_MACRO.test(sense)
+                 || TRANSLITERATED.test(sense)
+                 || BARE_ROOT.test(sense.trim()));
+}
+
 /** Parses `lemma|gloss|source` lines into a lemma → gloss map. */
 function parseDefinitions(text) {
   const defs = new Map();
@@ -417,8 +445,12 @@ function parseDefinitions(text) {
     if (parts.length < 2) continue;
     // Some headwords carry a leading '@' marking a proper-noun entry.
     const lemma = parts[0].replace(/^@/, '').trim();
-    const gloss = parts[1].trim();
+    // A few glosses carry Alpheios <span> markup around their Greek. The UI
+    // escapes what it renders, so the tags reached the panel — and the cards —
+    // as literal text. Keep the Greek inside, drop the tags.
+    const gloss = parts[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
     if (!lemma || !gloss) continue;
+    if (isEtymologyOnly(gloss)) continue;
     if (!defs.has(lemma)) defs.set(lemma, gloss);
   }
   return defs;
