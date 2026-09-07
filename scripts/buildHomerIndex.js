@@ -8,10 +8,12 @@
  *    Every token carries a lemma and a 9-character Perseus postag, so lemma
  *    frequencies and in-context parses come straight out of the annotation.
  *    License: CC BY-SA (Ancient Greek Dependency Treebank, Perseus Project).
- *  - PerseusDL/lexica LSJ, 28 volumes. The gloss source: it carries several
+ *  - PerseusDL/lexica LSJ, 27 volumes. The gloss source: it carries several
  *    senses per headword and the proper nouns Homer is full of.
  *  - alpheios-project/majorplus short definitions (lemma|gloss|source), used
  *    for the headwords LSJ's own spelling does not reach.
+ *  - data/homericNames.js, curated by hand rather than downloaded: LSJ has
+ *    almost no proper nouns, and Homer is full of them.
  *
  * Usage: npm run build:index
  * Author: Tyler Peairs
@@ -19,6 +21,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { normalizeForm, splitElision } from '../js/greekNormalize.js';
+import { HOMERIC_NAMES } from '../data/homericNames.js';
 
 const DATA_DIR = path.resolve('data');
 const SOURCE_DIR = path.join(DATA_DIR, 'sources');
@@ -32,11 +35,11 @@ const SOURCES = [
   { key: 'iliad', file: 'tlg0012.tlg001.perseus-grc1.tb.xml', url: `${TREEBANK_BASE}/tlg0012.tlg001.perseus-grc1.tb.xml` },
   { key: 'odyssey', file: 'tlg0012.tlg002.perseus-grc1.tb.xml', url: `${TREEBANK_BASE}/tlg0012.tlg002.perseus-grc1.tb.xml` },
   { key: 'defs', file: 'grc-mjp-defs.dat', url: 'https://raw.githubusercontent.com/alpheios-project/majorplus/master/dat/grc-mjp-defs.dat' },
-  // LSJ, split across 28 volumes. Worth the download: majorplus carries one
+  // LSJ, split across 27 volumes. Worth the download: majorplus carries one
   // sense per headword and almost no proper nouns, which is why ἀλωή read
   // "threshing-floor" with no hint of the orchard Homer usually means, and why
   // Ὀδυσσεύς had no gloss at all.
-  ...Array.from({ length: 28 }, (_, i) => ({
+  ...Array.from({ length: 27 }, (_, i) => ({
     key: `lsj${i + 1}`,
     file: `grc.lsj.perseus-eng${i + 1}.xml`,
     url: `${LSJ_BASE}/grc.lsj.perseus-eng${i + 1}.xml`,
@@ -288,6 +291,123 @@ function parseLsjVolume(xml, into) {
   }
 }
 
+// --- LSJ cross-references -----------------------------------------------
+// Many Epic or dialectal spellings carry no gloss of their own in LSJ: the
+// entry just points elsewhere ("ἠέλιος, Ep. for ἥλιος"). Two shapes of
+// pointer are worth reading:
+//  (a) a short headword bundled inside a larger entry, immediately followed
+//      by an <xr> — LSJ packs several minor spellings into one entry this
+//      way (h)e/lios sits inside the entry for h)e/, tucked among h)/|ei and
+//      h)ei/dhs).
+//  (b) an entry's own <sense> holding nothing but an <xr>, or its head prose
+//      reading "[dialect] for X" before any <sense> opens.
+// Only the labels below actually mean "same word, look there": lbl values
+// like "gloss on" or "f.l. for" mark a scribal note or a textual error, not
+// a spelling of the headword, and are left alone.
+const SAFE_XR_LABELS = new Set(['=', 'v.', 's.v.', 'v.l.']);
+const XR_EMBED_RE =
+  /<orth\b[^>]*>([^<]+)<\/orth>,?\s*(?:<gen\b[^>]*>[^<]*<\/gen>,?\s*)?(?:<gramGrp\b[^>]*>[\s\S]{0,80}?<\/gramGrp>\s*)?<xr\b[^>]*>\s*<lbl\b[^>]*>([^<]*)<\/lbl>\s*<ref\b[^>]*>([^<]+)<\/ref>\s*<\/xr>/g;
+const XR_ANY_RE = /<xr\b[^>]*>\s*<lbl\b[^>]*>([^<]*)<\/lbl>\s*<ref\b[^>]*>([^<]+)<\/ref>\s*<\/xr>/;
+const FOR_HEAD_RE = /for\s*<foreign\b[^>]*>([^<]+)<\/foreign>/;
+// How much head prose (before the first <sense>) a bare-xr entry may carry
+// and still count as a stub: enough for "τό, Ion." but not a real headnote.
+const XR_HEAD_MAX = 100;
+
+/**
+ * Picks the first candidate out of a cross-reference's target text and
+ * converts it to Greek — or null if it is not safely resolvable: a
+ * multi-word target is an illustrative phrase or quotation, not a headword.
+ */
+function firstCrossRefTarget(raw) {
+  const candidate = raw.split(/[,;]| and /)[0].trim().replace(/\.$/, '');
+  if (!candidate || candidate.includes(' ')) return null;
+  return betaToGreek(candidate);
+}
+
+/**
+ * Reads one LSJ volume for cross-reference pointers and adds
+ * source headword → target headword (both in Greek) to `into`.
+ * @param {string} xml one grc.lsj.perseus-engN.xml volume
+ * @param {Map<string,string>} into accumulated source → target
+ */
+function parseLsjCrossRefs(xml, into) {
+  // (a) a minor spelling bundled inside a larger entry, e.g. ἠέλιος inside
+  // the entry for ἠέ, written as "<orth>ἠέλιος</orth>, <xr>v. ἥλιος</xr>".
+  let match;
+  XR_EMBED_RE.lastIndex = 0;
+  while ((match = XR_EMBED_RE.exec(xml)) !== null) {
+    if (!SAFE_XR_LABELS.has(match[2].trim())) continue;
+    const source = betaToGreek(match[1]);
+    // A capitalised source is a name: LSJ's proper-noun cross-references are
+    // too easily a different headword that happens to share a spelling
+    // (Δανάη the girl vs. Δανάη "= δάφνη", a plant) — left to curated names.
+    if (!source || source[0] !== source[0].toLowerCase()) continue;
+    const target = firstCrossRefTarget(match[3]);
+    if (!target || target === source) continue;
+    if (!into.has(source)) into.set(source, target);
+  }
+
+  // (b) an entry whose own headword is the bare cross-reference.
+  const ENTRY_RE = /<entryFree\b([^>]*)>([\s\S]*?)<\/entryFree>/g;
+  ENTRY_RE.lastIndex = 0;
+  while ((match = ENTRY_RE.exec(xml)) !== null) {
+    const key = /\bkey="([^"]+)"/.exec(match[1])?.[1];
+    if (!key) continue;
+    const body = match[2];
+    if (/<tr\b/.test(body)) continue; // a real sense already glosses this entry
+    const source = betaToGreek(key);
+    if (!source || into.has(source) || source[0] !== source[0].toLowerCase()) continue;
+
+    const senseStart = body.indexOf('<sense');
+    const head = senseStart === -1 ? body : body.slice(0, senseStart);
+
+    // "[dialect] for X" head prose, read before any <sense> opens.
+    const forMatch = FOR_HEAD_RE.exec(head);
+    if (forMatch) {
+      const target = firstCrossRefTarget(forMatch[1]);
+      if (target && target !== source) into.set(source, target);
+      continue;
+    }
+
+    // A first <sense> holding nothing but an <xr>, citations aside.
+    if (senseStart === -1 || plainText(head).length > XR_HEAD_MAX) continue;
+    const rest = body.slice(senseStart);
+    const senseEnd = rest.indexOf('</sense>');
+    if (senseEnd === -1) continue;
+    const senseBlock = rest.slice(0, senseEnd + '</sense>'.length);
+    const xrMatch = XR_ANY_RE.exec(senseBlock);
+    if (!xrMatch || !SAFE_XR_LABELS.has(xrMatch[1].trim())) continue;
+    const before = senseBlock.slice(senseBlock.indexOf('>') + 1, xrMatch.index);
+    const after = senseBlock
+      .slice(xrMatch.index + xrMatch[0].length)
+      .replace(/<(bibl|cit)\b[^>]*>[\s\S]*?<\/\1>/g, ' ');
+    if (plainText(before) !== '' || plainText(after).replace(/[\s,.;:()—-]+/g, '') !== '') continue;
+    const target = firstCrossRefTarget(xrMatch[2]);
+    if (target && target !== source) into.set(source, target);
+  }
+}
+
+/**
+ * Follows a chain of cross-references to a headword that already has a
+ * gloss, guarding against cycles. Returns null rather than a partial guess:
+ * a cross-reference only counts as resolved when it bottoms out on a real
+ * gloss, never on another unresolved stub.
+ * @param {string} headword
+ * @param {Map<string,string>} crossRefs source → target
+ * @param {Map<string,{def?:string}>} lemmas
+ * @param {Set<string>} visited headwords already tried in this chain
+ * @returns {string|null}
+ */
+function resolveCrossRef(headword, crossRefs, lemmas, visited) {
+  if (visited.has(headword)) return null; // cycle
+  visited.add(headword);
+  const target = crossRefs.get(headword);
+  if (!target) return null;
+  const targetEntry = lemmas.get(target);
+  if (targetEntry?.def) return targetEntry.def;
+  return resolveCrossRef(target, crossRefs, lemmas, visited);
+}
+
 /** Parses `lemma|gloss|source` lines into a lemma → gloss map. */
 function parseDefinitions(text) {
   const defs = new Map();
@@ -347,10 +467,14 @@ async function main() {
   console.log(`  Glosses  ${definitions.size.toLocaleString()} majorplus entries`);
 
   const lsj = new Map();
-  for (let volume = 1; volume <= 28; volume += 1) {
-    parseLsjVolume(await fs.readFile(paths[`lsj${volume}`], 'utf8'), lsj);
+  const crossRefs = new Map();
+  for (let volume = 1; volume <= 27; volume += 1) {
+    const xml = await fs.readFile(paths[`lsj${volume}`], 'utf8');
+    parseLsjVolume(xml, lsj);
+    parseLsjCrossRefs(xml, crossRefs);
   }
   console.log(`  LSJ      ${lsj.size.toLocaleString()} headwords`);
+  console.log(`  LSJ xr   ${crossRefs.size.toLocaleString()} cross-references`);
 
   // --- forms: normalized surface form → deduped [lemma, postag] analyses ---
   const forms = new Map();
@@ -482,10 +606,47 @@ async function main() {
       glossed += 1;
     }
   }
+
+  // A lemma still without a gloss may be an Epic or dialectal spelling LSJ
+  // only ever points elsewhere for ("ἠέλιος, Ep. for ἥλιος"). Follow the
+  // pointer to a headword that already has a gloss — never onto another
+  // unresolved stub — and inherit it. This never touches a lemma that
+  // already has a def, curated or otherwise.
+  let crossRefResolved = 0;
+  let crossRefTokens = 0;
+  for (const [lemma, entry] of lemmas) {
+    if (entry.def) continue;
+    const gloss = resolveCrossRef(lemma, crossRefs, lemmas, new Set());
+    if (gloss) {
+      entry.def = gloss;
+      glossed += 1;
+      crossRefResolved += 1;
+      crossRefTokens += entry.iliad + entry.odyssey;
+    }
+  }
+
+  // Curated proper names, applied last: a fallback for whatever majorplus,
+  // LSJ, and LSJ cross-references still leave ungloss-ed. Never overwrites —
+  // the loop above already skips any lemma that already has a def.
+  let namesResolved = 0;
+  let namesTokens = 0;
+  for (const [lemma, entry] of lemmas) {
+    if (entry.def) continue;
+    const gloss = HOMERIC_NAMES[lemma];
+    if (gloss) {
+      entry.def = gloss;
+      glossed += 1;
+      namesResolved += 1;
+      namesTokens += entry.iliad + entry.odyssey;
+    }
+  }
+
   console.log(`\nGlosses:`);
   console.log(`  curated only            ${sources.majorplus.toLocaleString()}`);
   console.log(`  curated + LSJ senses    ${sources.extended.toLocaleString()}`);
   console.log(`  LSJ only (mostly names) ${sources.lsjOnly.toLocaleString()}`);
+  console.log(`  LSJ cross-reference     ${crossRefResolved.toLocaleString()} lemmas (${crossRefTokens.toLocaleString()} occurrences)`);
+  console.log(`  curated proper names    ${namesResolved.toLocaleString()} lemmas (${namesTokens.toLocaleString()} occurrences)`);
 
   console.log(`\nIndex:`);
   console.log(`  ${forms.size.toLocaleString()} distinct normalized forms`);
