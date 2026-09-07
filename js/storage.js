@@ -8,8 +8,10 @@
 // --- App timing and flashcard utilities ---
 import { addFlashcard, addConjugationFlashcard } from './flashcard.js';
 
-// Lemma resolution for the vocabulary cards.
+// Lemma resolution for the vocabulary cards, parses for the conjugation cards
+// and the journal.
 import { fetchHits } from './corpusFetch.js';
+import { loadMorphoData } from './morphoFetch.js';
 
 // Timing progress import
 import { startTime } from './app.js';
@@ -116,6 +118,52 @@ async function resolveLemma(tr, word, book, line) {
 }
 
 /**
+ * Resolves the parse the treebank records for a word.
+ *
+ * This replaces the Form column the reader used to fill in by hand: the
+ * treebank already knows the parse in context, so it is read from there rather
+ * than typed. Cached on the row by the click handler; looked up here for words
+ * that were never clicked.
+ *
+ * @param {HTMLTableRowElement} tr - the word's row, used as the parse cache
+ * @param {string} word - the Greek word as it appears in the line
+ * @param {string|number} [book] - Iliad book number
+ * @param {string|number} [line] - line number within that book
+ * @returns {Promise<string>} the parse, or '' if none could be resolved
+ */
+async function resolveParse(tr, word, book, line) {
+  if (tr.dataset.parse) return tr.dataset.parse;
+  try {
+    const { parses } = await loadMorphoData(word, book, line);
+    const parse = parses?.[0]?.parse || '';
+    if (parse) tr.dataset.parse = parse;
+    return parse;
+  } catch (err) {
+    console.error(`Parse lookup failed for "${word}":`, err);
+    return '';
+  }
+}
+
+/**
+ * Records what one card add did. A card the deck already held is a skip, not a
+ * failure — it means the word is already being reviewed.
+ */
+function tally(cards, result) {
+  if (result?.added) cards.added += 1;
+  else if (result?.reason === 'duplicate') cards.duplicate += 1;
+  else cards.error += 1;
+}
+
+/** Summarises a save's Anki export in one line, and says nothing if none ran. */
+function reportCards({ added, duplicate, error }) {
+  if (!added && !duplicate && !error) return;
+  const parts = [`${added} added`];
+  if (duplicate) parts.push(`${duplicate} already carded`);
+  if (error) parts.push(`${error} failed`);
+  console.log(`Anki export: ${parts.join(', ')}.`);
+}
+
+/**
  * Gathers translation data from each .line-block, computes timing,
  * and appends formatted markdown blocks to the server-side translation journal.
  */
@@ -138,6 +186,9 @@ export async function saveTranslations() {
   const secsPerLine = (elapsed / 1000 / validCount).toFixed(2);
 
   // 6) Build markdown log text for each block
+  // Anki export runs as a side effect of saving, so its outcome is summarised
+  // at the end rather than interrupting the save line by line.
+  const cards = { added: 0, duplicate: 0, error: 0 };
   let logText = '';
   let lastOriginalLine = getLastOriginalLine(await fetchLog());
   let originalLines = '';
@@ -166,7 +217,7 @@ export async function saveTranslations() {
     // always include original line
     logText += `Original Line: ${block.dataset.originalLine}\n`;
     // header row for table
-    logText += '| Word (Greek) | Word (Translation) | Form |\n';
+    logText += '| Word (Greek) | Word (Translation) | Parse |\n';
 
     // phrase guess input (only one textarea now)
     const guessArea = block.querySelector('.phrase-input');
@@ -175,30 +226,30 @@ export async function saveTranslations() {
 
     // each word row
     for (const tr of rows) {
-      const [greekTD, transTD, formTD] = Array.from(tr.children);
+      const [greekTD, transTD] = Array.from(tr.children);
       const greek = greekTD.textContent.trim();
       const translation = transTD.textContent.trim();
-      const form = formTD.textContent.trim();
+      const book = block.dataset.book ?? bookNum;
+      // The parse comes from the treebank now rather than a typed Form cell.
+      const parse = await resolveParse(tr, greek, book, block.dataset.lineNumber);
       const checkbox = tr.querySelector('.add-to-anki-checkbox');
       if (checkbox?.checked) {
         // Vocabulary is learned per lemma — the same unit the hit counts are
         // reported for — with the inflected form along for the ride.
-        const lemma = await resolveLemma(
-          tr, greek, block.dataset.book ?? bookNum, block.dataset.lineNumber
-        );
-        addFlashcard({
+        const lemma = await resolveLemma(tr, greek, book, block.dataset.lineNumber);
+        tally(cards, await addFlashcard({
           lemma,
           form: greek,
           translation,
           originalLines,
           phraseGuess: guess,
-        });
+        }));
       }
       const conjugationCheckbox = tr.querySelector('.add-to-anki-conjugation-checkbox');
       if (conjugationCheckbox?.checked) {
-        addConjugationFlashcard(originalLines, greek, form, guess);
+        tally(cards, await addConjugationFlashcard(originalLines, greek, parse, guess));
       }
-      logText += `| ${greek} | ${translation} | ${form} |\n`;
+      logText += `| ${greek} | ${translation} | ${parse} |\n`;
     }
 
     // blank line separates the word table from the trailing metadata below
@@ -229,10 +280,13 @@ export async function saveTranslations() {
     logText += '===END_BLOCK===\n\n';
   }
 
-  // 7) Append new logs to the server-side translation journal file
+  // 7) Report what the Anki export did, if it was asked to do anything
+  reportCards(cards);
+
+  // 8) Append new logs to the server-side translation journal file
   await appendLog(logText);
 
-  // 8) Refresh displayed log
+  // 9) Refresh displayed log
   await loadTranslations();
 
   return lastLineNumber;
