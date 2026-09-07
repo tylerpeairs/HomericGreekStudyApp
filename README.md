@@ -32,13 +32,19 @@ takes about a millisecond — see [How word lookup works](#how-word-lookup-works
 reveal Lattimore's translation to compare. Timing starts when you generate the grids.
 
 **Tutor feedback.** Submit your attempt and an OpenAI-backed endpoint returns corrections to
-your morphology, notes on syntax, a literal translation, and a study tip.
+your morphology, notes on syntax, a literal translation, and a study tip. It streams, so the
+first lines appear in about a second and a half.
 
 **Journal and flashcards.** Saved sessions append to `data/translationJournal.md` on disk.
-Checked words export to Anki over AnkiConnect: *Add to Anki* makes a vocabulary card fronted
-by the word's lemma — the same unit the hit counts are reported for — with the inflected form
-on the back, and *Add Conjugation to Anki* makes a card fronted by the inflected form itself,
-backed by your parse of it.
+Checked words export to Anki over AnkiConnect: *Add to Anki* makes a vocabulary card prompted
+by the word's lemma — the same unit the hit counts are reported for — over the untranslated
+Greek for context, with your gloss and the inflected form on the back. *Add Conjugation to
+Anki* makes a card fronted by the inflected form itself, backed by the treebank's parse of it
+in context. Both check the deck first and skip a word already carded, matching on the prompt
+alone so that meeting a word again in a later passage does not make a second card for it.
+
+Clicking a word fills its translation cell with the dictionary gloss, unless you have already
+written something there — checking an answer never overwrites it.
 
 ## Requirements
 
@@ -117,7 +123,9 @@ Perseus postag:
 
 Frequency is a count over those tokens. The parse is the treebank's own annotation of that
 exact line, so an ambiguous form arrives already disambiguated rather than as a list of
-everything it could theoretically be. Glosses come from the Alpheios short-definition list.
+everything it could theoretically be. Glosses come from the Alpheios short-definition list,
+extended with the senses and proper nouns Perseus' LSJ adds — the curated gloss always
+leads, because an automatic read of LSJ picks the wrong homonym often enough to matter.
 
 A clicked word resolves in three steps:
 
@@ -156,7 +164,7 @@ The server on port 3001 exposes:
 | `GET /api/hits?word=&book=&line=` | Lemma frequency across Homer |
 | `GET /api/lookup?word=&book=&line=` | Parses and short definitions |
 | `GET /api/concordance?lemma=&limit=` | Every line in Homer where a lemma occurs |
-| `POST /api/tutor-analysis` | Tutor feedback on a translation attempt |
+| `POST /api/tutor-analysis` | Tutor feedback on a translation attempt, streamed as server-sent events |
 | `GET`/`POST /api/translation-log` | Read and append the translation journal |
 
 `book` and `line` are optional everywhere they appear, but passing them is what enables the
@@ -204,8 +212,10 @@ Downloaded by `npm run build:index`, gitignored:
 - `data/homerIndex.json` — the generated lookup index.
 - `data/sources/` — Homer treebanks from
   [PerseusDL/treebank_data](https://github.com/PerseusDL/treebank_data) (Ancient Greek
-  Dependency Treebank, CC BY-SA), and short definitions from
-  [alpheios-project/majorplus](https://github.com/alpheios-project/majorplus).
+  Dependency Treebank, CC BY-SA), short definitions from
+  [alpheios-project/majorplus](https://github.com/alpheios-project/majorplus), and LSJ from
+  [PerseusDL/lexica](https://github.com/PerseusDL/lexica) (CC BY-SA). LSJ is 28 volumes and
+  about 300MB; `npm run build:index` downloads it once into the gitignored `data/sources/`.
 
 ## Maintenance
 

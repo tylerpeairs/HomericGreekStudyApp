@@ -4,7 +4,7 @@
  *  - /api/hits endpoint: lemma frequency in Homer, from the local Perseus index
  *  - /api/lookup endpoint: morphological parses and short definitions, from the same index
  *  - /api/concordance endpoint: every line in Homer where a lemma occurs
- *  - /api/tutor-analysis endpoint: provides Homeric Greek tutor analysis via OpenAI GPT-5
+ *  - /api/tutor-analysis endpoint: streams Homeric Greek tutor analysis via OpenAI GPT-5
  *  - /api/translation-log endpoint: reads/appends the translation journal file on disk
  * Author: Tyler Peairs
  */
@@ -150,7 +150,9 @@ app.get('/api/concordance', (req, res) => {
 
 /**
  * POST /api/tutor-analysis
- * Receives translation payload and returns tutor analysis via OpenAI GPT-5.
+ * Receives a translation payload and streams tutor analysis back as server-sent
+ * events: `{delta}` for each chunk of text, then `{done:true}`, or `{error}` if
+ * the model call fails after the stream has already started.
  */
 app.post('/api/tutor-analysis', async (req, res) => {
   try {
@@ -165,20 +167,50 @@ app.post('/api/tutor-analysis', async (req, res) => {
     const userContent = JSON.stringify(payload, null, 2);
 
     console.log('Sending OpenAI Responses API request with model: gpt-5.5');
-    const response = await openaiClient.responses.create({
+    const stream = await openaiClient.responses.create({
       model: 'gpt-5.5',
       input: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userContent },
       ],
+      // The two settings that decide how long this takes. Default effort and
+      // verbosity spent 17-30s composing several paragraphs of prose; the
+      // feedback the app actually renders is four short sections, and asking
+      // for that directly answers in about five.
+      reasoning: { effort: 'low' },
+      text: { verbosity: 'low' },
+      stream: true,
     });
-    console.log('OpenAI response received.');
-    const analysis = response.output_text || '';
+
+    // Streamed as server-sent events so the reader starts seeing the analysis
+    // in about a second and a half rather than waiting for all of it.
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    let analysis = '';
+    for await (const event of stream) {
+      if (event.type === 'response.output_text.delta') {
+        analysis += event.delta;
+        res.write(`data: ${JSON.stringify({ delta: event.delta })}\n\n`);
+      } else if (event.type === 'response.failed' || event.type === 'error') {
+        throw new Error(event.response?.error?.message || event.message || 'stream failed');
+      }
+    }
     console.log('Extracted analysis:', analysis);
-    res.json({ analysis });
+    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    res.end();
   } catch (err) {
     console.error('Error in tutor-analysis:', err);
-    res.status(500).json({ error: err.message });
+    // Once the event stream has started there is no status code left to set,
+    // so the failure has to travel as an event the client can render.
+    if (res.headersSent) {
+      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.end();
+    } else {
+      res.status(500).json({ error: err.message });
+    }
   }
 });
 

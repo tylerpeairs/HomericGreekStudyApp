@@ -42,7 +42,6 @@ export function createLineBlock(lineNumber, text, bookNumber) {
       <tr>
         <th>Word (Greek)</th>
         <th>Word (Translation)</th>
-        <th>Form</th>
         <th>Add to Anki</th>
         <th>Add Conjugation to Anki</th>
       </tr>
@@ -58,7 +57,6 @@ export function createLineBlock(lineNumber, text, bookNumber) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><span lang="grc" class="morpho-word" style="cursor:pointer">${word}</span></td>
-      <td contenteditable="true"></td>
       <td contenteditable="true"></td>
       <td><input type="checkbox" class="add-to-anki-checkbox" /></td>
       <td><input type="checkbox" class="add-to-anki-conjugation-checkbox" /></td>
@@ -104,31 +102,36 @@ export function createLineBlock(lineNumber, text, bookNumber) {
     table.querySelectorAll('tbody tr').forEach(row => {
       const word = row.querySelector('.morpho-word').textContent;
       const translationGuess = row.children[1].textContent.trim();
-      const formGuess = row.children[2].textContent.trim();
-      words.push({ word, translationGuess, formGuess });
+      // The parse is the treebank's, not a guess, so it goes along as
+      // reference rather than as something for the tutor to correct.
+      words.push({ word, translationGuess, parse: row.dataset.parse || '' });
     });
     const payload = {
       lineNumber: block.dataset.lineNumber,   // target line number in the Iliad
       originalLine: block.dataset.originalLine, // Greek text of the target line
-      wordGuesses: words,                     // array of { word, translationGuess, formGuess }
+      wordGuesses: words,                     // array of { word, translationGuess, parse }
       userTranslation: phraseContainer.querySelector('.phrase-input').value.trim(),
       actualTranslation: revealedChunk.map(c => c.text).join(' '),
     };
+    // The panel goes up before the request, because the analysis streams into
+    // it: waiting for the whole thing left the reader looking at nothing.
+    let outputDiv = phraseContainer.querySelector('.tutor-output');
+    if (!outputDiv) {
+      outputDiv = document.createElement('div');
+      outputDiv.className = 'tutor-output';
+      outputDiv.style.whiteSpace = 'pre-wrap';
+      phraseContainer.appendChild(outputDiv);
+    }
+    outputDiv.textContent = 'Thinking…';
+
     try {
-      console.log('Tutor Analysis Payload:', payload);
-      const analysis = await requestAnalysis(payload);
-      console.log('Tutor Analysis Response:', analysis);
-      // Display analysis below button
-      let outputDiv = phraseContainer.querySelector('.tutor-output');
-      if (!outputDiv) {
-        outputDiv = document.createElement('div');
-        outputDiv.className = 'tutor-output';
-        outputDiv.style.whiteSpace = 'pre-wrap';
-        phraseContainer.appendChild(outputDiv);
-      }
+      const analysis = await requestAnalysis(payload, text => {
+        outputDiv.textContent = text;
+      });
       outputDiv.textContent = analysis;
     } catch (err) {
       console.error('Tutor Analysis Error:', err);
+      outputDiv.textContent = `Tutor analysis failed: ${err.message}`;
     }
   }
 
@@ -199,11 +202,24 @@ export function createLineBlock(lineNumber, text, bookNumber) {
       const hits = hitsResult.status === 'fulfilled' ? hitsResult.value : null;
       const data = dataResult.status === 'fulfilled' ? dataResult.value : null;
 
-      // The vocabulary card is keyed on the lemma, so hold on to the one this
-      // lookup resolved; saving falls back to its own lookup for words the
-      // reader checked without ever clicking.
+      // Cache what this lookup resolved on the row: the vocabulary card is
+      // keyed on the lemma, and the parse now stands in for the Form column
+      // the reader used to fill in. Saving falls back to its own lookups for
+      // words checked without ever being clicked.
       const row = span.closest('tr');
-      if (row && hits?.lemma) row.dataset.lemma = hits.lemma;
+      const primary = data?.parses?.[0];
+      if (row) {
+        if (hits?.lemma) row.dataset.lemma = hits.lemma;
+        if (primary?.parse) row.dataset.parse = primary.parse;
+        // Fill the translation cell from the gloss, but never over something
+        // already typed — clicking to check an answer must not erase it.
+        const translationCell = row.children[1];
+        // Just the leading sense: a gloss now carries up to three, which is
+        // useful in the panel above but too much for a one-line cell.
+        if (primary?.definition && translationCell && !translationCell.textContent.trim()) {
+          translationCell.textContent = primary.definition.split('; ')[0];
+        }
+      }
 
       let hitsHtml;
       if (!hits) {

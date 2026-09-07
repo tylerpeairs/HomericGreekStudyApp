@@ -8,7 +8,10 @@
  *    Every token carries a lemma and a 9-character Perseus postag, so lemma
  *    frequencies and in-context parses come straight out of the annotation.
  *    License: CC BY-SA (Ancient Greek Dependency Treebank, Perseus Project).
- *  - alpheios-project/majorplus short definitions (lemma|gloss|source).
+ *  - PerseusDL/lexica LSJ, 28 volumes. The gloss source: it carries several
+ *    senses per headword and the proper nouns Homer is full of.
+ *  - alpheios-project/majorplus short definitions (lemma|gloss|source), used
+ *    for the headwords LSJ's own spelling does not reach.
  *
  * Usage: npm run build:index
  * Author: Tyler Peairs
@@ -23,10 +26,21 @@ const OUTPUT_PATH = path.join(DATA_DIR, 'homerIndex.json');
 
 const TREEBANK_BASE =
   'https://raw.githubusercontent.com/PerseusDL/treebank_data/master/v2.1/Greek/texts';
+const LSJ_BASE =
+  'https://raw.githubusercontent.com/PerseusDL/lexica/master/CTS_XML_TEI/perseus/pdllex/grc/lsj';
 const SOURCES = [
   { key: 'iliad', file: 'tlg0012.tlg001.perseus-grc1.tb.xml', url: `${TREEBANK_BASE}/tlg0012.tlg001.perseus-grc1.tb.xml` },
   { key: 'odyssey', file: 'tlg0012.tlg002.perseus-grc1.tb.xml', url: `${TREEBANK_BASE}/tlg0012.tlg002.perseus-grc1.tb.xml` },
   { key: 'defs', file: 'grc-mjp-defs.dat', url: 'https://raw.githubusercontent.com/alpheios-project/majorplus/master/dat/grc-mjp-defs.dat' },
+  // LSJ, split across 28 volumes. Worth the download: majorplus carries one
+  // sense per headword and almost no proper nouns, which is why ἀλωή read
+  // "threshing-floor" with no hint of the orchard Homer usually means, and why
+  // Ὀδυσσεύς had no gloss at all.
+  ...Array.from({ length: 28 }, (_, i) => ({
+    key: `lsj${i + 1}`,
+    file: `grc.lsj.perseus-eng${i + 1}.xml`,
+    url: `${LSJ_BASE}/grc.lsj.perseus-eng${i + 1}.xml`,
+  })),
 ];
 
 // Coverage floors from the measurements taken when this index was designed.
@@ -104,6 +118,176 @@ function parseTreebank(xml) {
   return tokens;
 }
 
+// --- LSJ ---------------------------------------------------------------------
+// LSJ headwords are beta code: "a)lwh/" is ἀλωή, "*)aqh/nh" is Ἀθήνη. The map
+// below is only what appears in headwords — no need for the full transliteration.
+const BETA_LETTERS = {
+  a: 'α', b: 'β', g: 'γ', d: 'δ', e: 'ε', z: 'ζ', h: 'η', q: 'θ', i: 'ι',
+  k: 'κ', l: 'λ', m: 'μ', n: 'ν', c: 'ξ', o: 'ο', p: 'π', r: 'ρ', s: 'σ',
+  t: 'τ', u: 'υ', f: 'φ', x: 'χ', y: 'ψ', w: 'ω',
+};
+const BETA_MARKS = {
+  ')': '̓', '(': '̔', '/': '́', '\\': '̀',
+  '=': '͂', '|': 'ͅ', '+': '̈',
+};
+// Combining marks have to be applied in this order for NFC to compose them.
+const MARK_ORDER = ['̈', '̓', '̔', '́', '̀', '͂', 'ͅ'];
+
+/**
+ * Converts an LSJ beta-code headword to Greek.
+ *
+ * Two things in the key are not part of the word: a trailing digit numbering
+ * homonyms (a)1, a)2), and the metrical quantity marks ^ and _ that mark a
+ * vowel short or long — "au)ti/ka^" is αὐτίκα, and leaving the caret in place
+ * is why every entry carrying one failed to match.
+ *
+ * @param {string} key the value of an entryFree's key attribute
+ * @returns {string} the headword in composed Greek
+ */
+function betaToGreek(key) {
+  const cleaned = key.replace(/\d+$/, '').replace(/[\^_]/g, '');
+  let out = '';
+  let i = 0;
+  while (i < cleaned.length) {
+    let capital = false;
+    if (cleaned[i] === '*') { capital = true; i += 1; }
+    const marks = [];
+    // Marks sit before the letter on capitals and after it on lower case.
+    while (i < cleaned.length && BETA_MARKS[cleaned[i]]) { marks.push(BETA_MARKS[cleaned[i]]); i += 1; }
+    if (i >= cleaned.length) break;
+    const char = cleaned[i];
+    i += 1;
+    let base = BETA_LETTERS[char.toLowerCase()];
+    if (!base) { out += char; continue; }
+    if (base === 'σ' && (i >= cleaned.length || cleaned[i] === ' ' || cleaned[i] === '-')) base = 'ς';
+    while (i < cleaned.length && BETA_MARKS[cleaned[i]]) { marks.push(BETA_MARKS[cleaned[i]]); i += 1; }
+    if (capital) base = base.toUpperCase();
+    marks.sort((a, b) => MARK_ORDER.indexOf(a) - MARK_ORDER.indexOf(b));
+    out += (base + marks.join('')).normalize('NFC');
+  }
+  return out.normalize('NFC');
+}
+
+// Abbreviations and connectives that open a fragment rather than a definition.
+const NOT_A_GLOSS = /^(later|cf|codd|v\.l|gen|pl|sq|etc|ibid|dim|Ep|Dor|Att|Ion|also|and|or)\b/i;
+const LEADS_NOWHERE = /^(at|in|of|and|also|or|from|with|by|for|prob|ap)\b/i;
+
+/** Strips tags and entities from a fragment of entry markup. */
+function plainText(xml) {
+  return xml
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[a-z]+;/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^[\s,.;:—-]+|[\s,.;:—-]+$/g, '');
+}
+
+/**
+ * Whether a fragment reads as a definition rather than as apparatus.
+ *
+ * Rules out grammatical abbreviations, fragments that open with a preposition
+ * (the tail of a stripped citation, "at Thebes and Argos"), and anything still
+ * carrying beta-code punctuation, which means untransliterated Greek.
+ */
+function isGloss(text) {
+  return Boolean(
+    text
+    && text.length > 2
+    && text.length < 60
+    && !NOT_A_GLOSS.test(text)
+    && !LEADS_NOWHERE.test(text)
+    && /[a-z]{3}/.test(text)
+    && !/[)(/\\=|+]/.test(text)
+  );
+}
+
+/**
+ * The translations LSJ marks with <tr>, which is where a common noun's meaning
+ * lives. Senses at level 1 are preferred: a <tr> nested deeper describes some
+ * narrower idiom, which is how Ἀθήνη came back as "casting vote".
+ */
+function translationGlosses(body) {
+  for (const topLevelOnly of [true, false]) {
+    const glosses = [];
+    const segments = [];
+    if (topLevelOnly) {
+      const SENSE_RE = /<sense\b([^>]*)>([\s\S]*?)<\/sense>/g;
+      let sense;
+      while ((sense = SENSE_RE.exec(body)) !== null) {
+        if (sense[1].includes('level="1"')) segments.push(sense[2]);
+      }
+    } else {
+      segments.push(body);
+    }
+    for (const segment of segments) {
+      const TR_RE = /<tr\b[^>]*>([\s\S]*?)<\/tr>/g;
+      let tr;
+      while ((tr = TR_RE.exec(segment)) !== null) {
+        const gloss = plainText(tr[1]);
+        if (isGloss(gloss) && !glosses.includes(gloss)) glosses.push(gloss);
+      }
+    }
+    if (glosses.length) return glosses;
+  }
+  return [];
+}
+
+/**
+ * The English name in an entry's head, which is where LSJ glosses a proper
+ * noun — "Ἀθήνη, ἡ, Athene" — rather than in a <tr>. LSJ writes ":—" ahead of
+ * the definition when the head is long with variant forms, so that part is
+ * read first, and the whole head after it.
+ */
+function headName(body) {
+  const head = body
+    .split('<sense')[0]
+    .replace(/<(bibl|cit|quote|foreign|ref|etym)\b[^>]*>[\s\S]*?<\/\1>/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\([^)]*\)/g, ' ');
+  const regions = head.includes(':—') ? [head.slice(head.indexOf(':—') + 2), head] : [head];
+  for (const region of regions) {
+    for (const segment of region.split(/[,;]/)) {
+      const text = plainText(segment);
+      if (isGloss(text) && text[0] === text[0].toUpperCase()) return [text];
+    }
+  }
+  return [];
+}
+
+/**
+ * Parses one LSJ volume into headword → short definition.
+ *
+ * Keeps up to three senses for an ordinary word rather than only the first:
+ * one sense is what made ἀλωή read "threshing-floor" alone, when the sense
+ * Homer usually wants — garden, orchard, vineyard — is the one after it. A
+ * proper noun keeps one, since its later senses are things named after it
+ * ("games in honour of Odysseus").
+ *
+ * @param {string} xml one grc.lsj.perseus-engN.xml volume
+ * @param {Map<string,string>} into accumulated headword → definition
+ */
+function parseLsjVolume(xml, into) {
+  const ENTRY_RE = /<entryFree\b([^>]*)>([\s\S]*?)<\/entryFree>/g;
+  let match;
+  while ((match = ENTRY_RE.exec(xml)) !== null) {
+    const key = /\bkey="([^"]+)"/.exec(match[1])?.[1];
+    if (!key) continue;
+    const headword = betaToGreek(key);
+    if (!headword || into.has(headword)) continue;
+
+    const body = match[2];
+    const proper = headword[0] === headword[0].toUpperCase();
+    // A proper noun falls back to <tr> only when that reads as a name too.
+    // Ἀθήνη's first translation is "casting vote" — a real idiom involving her,
+    // and worse than no gloss on a card asking what the word means.
+    const named = translationGlosses(body).filter(g => g[0] === g[0].toUpperCase());
+    const glosses = proper
+      ? (headName(body).length ? headName(body) : named)
+      : (translationGlosses(body).length ? translationGlosses(body) : headName(body));
+    if (glosses.length) into.set(headword, glosses.slice(0, proper ? 1 : 3).join('; '));
+  }
+}
+
 /** Parses `lemma|gloss|source` lines into a lemma → gloss map. */
 function parseDefinitions(text) {
   const defs = new Map();
@@ -160,7 +344,13 @@ async function main() {
   console.log(`  Odyssey  ${odyssey.length.toLocaleString()} tokens`);
 
   const definitions = parseDefinitions(await fs.readFile(paths.defs, 'utf8'));
-  console.log(`  Glosses  ${definitions.size.toLocaleString()} entries`);
+  console.log(`  Glosses  ${definitions.size.toLocaleString()} majorplus entries`);
+
+  const lsj = new Map();
+  for (let volume = 1; volume <= 28; volume += 1) {
+    parseLsjVolume(await fs.readFile(paths[`lsj${volume}`], 'utf8'), lsj);
+  }
+  console.log(`  LSJ      ${lsj.size.toLocaleString()} headwords`);
 
   // --- forms: normalized surface form → deduped [lemma, postag] analyses ---
   const forms = new Map();
@@ -233,14 +423,69 @@ async function main() {
   }
   if (merged) console.log(`  merged ${merged} mis-accented headword(s)`);
 
+  // --- glosses: LSJ first, majorplus for what it does not reach ---------------
+  // LSJ headwords differ from treebank lemmas in ways that are not differences
+  // of word: it capitalises αἶσα as the personified Αἶσα, and editors accent
+  // some headwords differently. So an exact match is tried first, then case,
+  // then a diacritic-blind match — but that last one only when it is
+  // unambiguous, because stripping accents merges τίς with τις.
+  const lsjLower = new Map();
+  const lsjFolded = new Map();
+  for (const [headword, gloss] of lsj) {
+    const lower = headword.toLowerCase();
+    if (!lsjLower.has(lower)) lsjLower.set(lower, gloss);
+    const folded = normalizeForm(headword);
+    if (!folded) continue;
+    // null marks a key more than one headword folds onto: ambiguous, so unused.
+    lsjFolded.set(folded, lsjFolded.has(folded) ? null : gloss);
+  }
+
+  const sources = { majorplus: 0, extended: 0, lsjOnly: 0 };
   let glossed = 0;
   for (const [lemma, entry] of lemmas) {
-    const gloss = definitions.get(lemma);
+    // majorplus is one curated gloss per headword and it leads: LSJ is a
+    // richer source but an automatic read of it picks the wrong homonym often
+    // enough to matter — its first λέγω is the one meaning "lay", not "say".
+    const curated = definitions.get(lemma);
+    // A capitalised lemma is a name, so it must not fold onto a lower-case LSJ
+    // headword: that is what glossed Ἕκτωρ as ἕκτωρ, "holding fast".
+    const capitalised = lemma[0] !== lemma[0].toLowerCase();
+    const fromLsj = lsj.get(lemma)
+      || (capitalised ? null : lsjLower.get(lemma.toLowerCase()))
+      || (capitalised ? null : lsjFolded.get(normalizeForm(lemma)) || null);
+
+    let gloss = curated;
+    if (curated && fromLsj) {
+      // Senses LSJ adds to the curated one. Kept only if they say something:
+      // a bare short word here is usually LSJ's Latin equivalent ("ibo") or a
+      // homonym's meaning, not a second sense of this word.
+      const have = curated.toLowerCase();
+      const extra = fromLsj.split('; ').filter(sense =>
+        (sense.length >= 5 || sense.includes(' '))
+        && !have.includes(sense.toLowerCase())
+      );
+      if (extra.length) {
+        gloss = [curated, ...extra].join('; ');
+        sources.extended += 1;
+      } else {
+        sources.majorplus += 1;
+      }
+    } else if (curated) {
+      sources.majorplus += 1;
+    } else if (fromLsj) {
+      gloss = fromLsj;
+      sources.lsjOnly += 1;
+    }
+
     if (gloss) {
       entry.def = gloss;
       glossed += 1;
     }
   }
+  console.log(`\nGlosses:`);
+  console.log(`  curated only            ${sources.majorplus.toLocaleString()}`);
+  console.log(`  curated + LSJ senses    ${sources.extended.toLocaleString()}`);
+  console.log(`  LSJ only (mostly names) ${sources.lsjOnly.toLocaleString()}`);
 
   console.log(`\nIndex:`);
   console.log(`  ${forms.size.toLocaleString()} distinct normalized forms`);
