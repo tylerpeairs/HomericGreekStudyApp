@@ -171,6 +171,10 @@ function betaToGreek(key) {
   return out.normalize('NFC');
 }
 
+// A breathing mark can only sit on a word's first vowel, so one standing
+// before the first letter is an annotation artefact of the treebank's.
+const STRAY_BREATHING = /^[\u0313\u0314\u02bc\u02bd\u02be\u02bf\u1fbd\u1ffe]+/;
+
 // Abbreviations and connectives that open a fragment rather than a definition.
 const NOT_A_GLOSS = /^(later|cf|codd|v\.l|gen|pl|sq|etc|ibid|dim|Ep|Dor|Att|Ion|also|and|or)\b/i;
 const LEADS_NOWHERE = /^(at|in|of|and|also|or|from|with|by|for|prob|ap)\b/i;
@@ -181,6 +185,10 @@ const LEADS_NOWHERE = /^(at|in|of|and|also|or|from|with|by|for|prob|ap)\b/i;
 const PHONETIC_MACRO = /\[[a-z]+ ?\]/;
 const TRANSLITERATED = /[ṛṇśṣṭḍṃḥṝḷǵḱĝḫṅñāīūēō]/;
 const CITATION_TAIL = /\b(?:Ev|Sch|Hes|Arat|Opp|Ael|Str|Plu|Matt|Parv|Hdn)\./;
+// Whole-gloss abbreviations. Kept as an exact list rather than a pattern:
+// "Call" is Callimachus and "Aeol" a dialect label, but "Muse", "Leto" and
+// "Zeus" are the real glosses of the names beside them.
+const ABBREVIATION_ONLY = new Set(['Call', 'Aeol', 'Nonn', 'Hsch', 'Sch', 'EM', 'Gramm', 'Trag', 'Com']);
 const BARE_ROOT = /^\*?[a-z]{1,8}-$/;
 
 /** Strips tags and entities from a fragment of entry markup. */
@@ -213,6 +221,7 @@ function isGloss(text) {
     && !TRANSLITERATED.test(text)
     && !CITATION_TAIL.test(text)
     && !BARE_ROOT.test(text)
+    && !ABBREVIATION_ONLY.has(text.replace(/\.$/, ''))
   );
 }
 
@@ -673,12 +682,35 @@ async function main() {
     }
   }
 
+  // Last of all: a lemma the treebank wrote with a stray breathing before its
+  // first letter is the same word as its clean twin, so it inherits whatever
+  // that twin ended up with. Done here rather than by matching the stripped
+  // form against the dictionaries, because stripping also strips the capital
+  // that marks a name — ̓ἀθήνη looked like a common noun and folded onto LSJ's
+  // ἀθήνη, coming back as "casting vote" instead of Athena.
+  let aliasResolved = 0;
+  let aliasTokens = 0;
+  for (const [lemma, entry] of lemmas) {
+    if (entry.def) continue;
+    const cleaned = lemma.replace(STRAY_BREATHING, '');
+    if (cleaned === lemma || !cleaned) continue;
+    const capitalised = cleaned[0].toUpperCase() + cleaned.slice(1);
+    const twin = lemmas.get(cleaned)?.def || lemmas.get(capitalised)?.def;
+    if (twin) {
+      entry.def = twin;
+      glossed += 1;
+      aliasResolved += 1;
+      aliasTokens += entry.iliad + entry.odyssey;
+    }
+  }
+
   console.log(`\nGlosses:`);
   console.log(`  curated only            ${sources.majorplus.toLocaleString()}`);
   console.log(`  curated + LSJ senses    ${sources.extended.toLocaleString()}`);
   console.log(`  LSJ only (mostly names) ${sources.lsjOnly.toLocaleString()}`);
   console.log(`  LSJ cross-reference     ${crossRefResolved.toLocaleString()} lemmas (${crossRefTokens.toLocaleString()} occurrences)`);
   console.log(`  curated proper names    ${namesResolved.toLocaleString()} lemmas (${namesTokens.toLocaleString()} occurrences)`);
+  console.log(`  stray-breathing aliases ${aliasResolved.toLocaleString()} lemmas (${aliasTokens.toLocaleString()} occurrences)`);
 
   console.log(`\nIndex:`);
   console.log(`  ${forms.size.toLocaleString()} distinct normalized forms`);
