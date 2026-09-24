@@ -80,15 +80,15 @@ function initializeApp() {
   </div>
     `).join('');
 
-    // Auto-select lines leading up to (and including) the first ASCII period '.'
+    // Auto-select lines up to (and including) the first line that ends a
+    // thought: one whose text *ends* in a full stop, ano teleia, question mark
+    // or exclamation, allowing for a closing quote. A stop mid-line doesn't
+    // count, since the next clause runs on into the following line.
+    const SECTION_END = /[.··;;!]["'’»]*\s*$/;
     const autoItems = Array.from(container.querySelectorAll('.line-item'));
     for (const autoItem of autoItems) {
-      const text = autoItem.getAttribute('data-text');
-      if (text.includes('·')) {
-        autoItem.classList.add('selected');
-        break;
-      }
       autoItem.classList.add('selected');
+      if (SECTION_END.test(autoItem.getAttribute('data-text'))) break;
     }
 
     // Drag-range contiguous selection: click and drag to select a block of lines
