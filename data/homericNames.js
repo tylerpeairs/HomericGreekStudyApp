@@ -43,6 +43,9 @@ export const HOMERIC_NAMES = {
   "Ἀντίνοος": "Antinous, a suitor of Penelope", // 56
   "Πηλείδης": "son of Peleus, i.e. Achilles", // 55
   "Φοῖβος": "Phoebus, epithet of Apollo", // 52
+  // LSJ glosses this only in Greek ("ὁ ἕκαθεν εἴργων"), so it needs a curated
+  // entry even though it has an entry there.
+  "Ἑκάεργος": "far-working, far-shooting, epithet of Apollo", // 17
   "Ἄργος": "Argos", // 48
   "Λύκιοι": "the Lycians", // 44
   "ᾍδης": "Hades, god of the underworld", // 43

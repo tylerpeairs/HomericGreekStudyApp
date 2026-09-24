@@ -22,7 +22,18 @@ echo "Starting Anki..."
 open -a "Anki"
 
 echo "Starting static file server on http://localhost:8000..."
-nohup python3 -m http.server 8000 >/dev/null 2>&1 &
+# Served with no-store. http.server sends only Last-Modified, so browsers cache
+# the ES modules heuristically — editing js/ then reloading could leave a stale
+# module running against a changed server, which is how a rewritten
+# analysisLoader.js ended up calling response.json() on an event stream.
+nohup python3 -c "
+import http.server
+class NoStore(http.server.SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header('Cache-Control', 'no-store, must-revalidate')
+        super().end_headers()
+http.server.test(HandlerClass=NoStore, port=8000)
+" >/dev/null 2>&1 &
 
 echo "Starting lookup server on http://localhost:3001..."
 nohup arch -arm64 node js/server.js >/dev/null 2>&1 &
